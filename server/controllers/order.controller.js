@@ -210,7 +210,7 @@ export const deleteOrderDetails = async (request, response) => {
         }
 
         const order = await OrderModel.findOne({ _id }).session(session);
-
+         
         if (!order) {
             await session.abortTransaction(); // Hủy transaction nếu không tìm thấy đơn hàng
             session.endSession();
@@ -223,7 +223,7 @@ export const deleteOrderDetails = async (request, response) => {
 
         // Cập nhật lại stock cho từng sản phẩm trong đơn hàng
         for (let item of order.products) {
-            await ProductModel.findByIdAndUpdate(
+            await OrderModel.findByIdAndUpdate(
                 item.productId,
                 { $inc: { stock: +item.quantity } },
                 { session }
@@ -231,7 +231,10 @@ export const deleteOrderDetails = async (request, response) => {
         }
 
         // Xóa đơn hàng
-        const deleteOrder = await OrderModel.deleteOne({ _id }).session(session);
+        const deleteOrder = await ProductModel.updateOne(
+            { _id: _id },  // Điều kiện tìm sản phẩm
+            { $set: { publish: false } } // Chỉ cập nhật trường `publish`
+        ).session(session);
 
         // Commit transaction
         await session.commitTransaction();

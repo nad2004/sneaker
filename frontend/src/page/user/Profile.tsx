@@ -96,7 +96,7 @@ const Profile = () => {
         const response = await axios.put("http://localhost:8080/api/user/upload-avatar", formData, {
             headers: {
                 "Content-Type": "multipart/form-data",
-                Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+                authorization: `${localStorage.getItem("accessToken")}`,
             },
         });
         

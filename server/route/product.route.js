@@ -15,7 +15,7 @@ productRouter.post('/get-product-by-categories',getProductsByCategories)
 productRouter.put('/update-product-details',auth,admin,updateProductDetails)
 
 //delete product
-productRouter.delete('/delete',auth,admin,deleteProductDetails)
+productRouter.put('/delete',auth,admin,deleteProductDetails)
 
 //search product 
 productRouter.post('/search-product',searchProduct)

@@ -218,11 +218,12 @@ const customDataProvider: DataProvider = {
     delete: async (resource, params) => {
         try {
             const token = localStorage.getItem("accessToken");
-            const response = await axios.delete(
-                `${apiUrl}/${resource}/delete`, 
-                { 
-                    headers: { Authorization: `Bearer ${token}` },
-                    data: { _id: params.id }
+    
+            const response = await axios.put(
+                `${apiUrl}/${resource}/delete`,
+                { _id: params.id },  // Body
+                {
+                    headers: { authorization: `${token}` } // Headers phải là tham số thứ 3
                 }
             );
             return { data: { id: params.id } };

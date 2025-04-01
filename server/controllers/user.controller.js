@@ -8,7 +8,6 @@ import uploadImageClodinary from '../utils/uploadImageClodinary.js'
 import generatedOtp from '../utils/generatedOtp.js'
 import forgotPasswordTemplate from '../utils/forgotPasswordTemplate.js'
 import jwt from 'jsonwebtoken'
-import otpGenerator from "otp-generator";
 export const getUserController = async(request,response)=>{
     try {
         
@@ -78,7 +77,7 @@ export async function registerUserController(request, response) {
         const hashPassword = await bcryptjs.hash(password, salt);
 
         // 🔹 **Tạo mã OTP ngẫu nhiên (6 số)**
-        const otpCode = otpGenerator.generate(6, { digits: true, upperCase: false, specialChars: false });
+        const otpCode = generatedOtp();
         const otpExpiry = new Date(Date.now() + 1 * 60 * 1000); // OTP có hiệu lực trong 1 phút
 
         // 🔹 **Lưu user với OTP vào database**
@@ -91,24 +90,15 @@ export async function registerUserController(request, response) {
         });
 
         await newUser.save();
-
-        // 🔹 **Tạo nội dung email**
-        const emailContent = `
-            <h2>Hello ${name},</h2>
-            <p>Your OTP for email verification is: <strong>${otpCode}</strong></p>
-            <p>This OTP will expire in 1 minutes.</p>
-            <p>If you did not request this, please ignore this email.</p>
-        `;
-
         console.log("🟢 Sending OTP email...");
         await sendEmail({
             sendTo: email,
             subject: "Your OTP Code for Sneaker Store",
-            html: emailContent
+            html: verifyEmailTemplate({name, otp: otpCode})
         });
 
         return response.json({
-            message: "User registered successfully. Please check your email for OTP verification.",
+            message: "User registered successfully.",
             error: false,
             success: true,
             userId: newUser._id // ✅ Trả về userId để FE sử dụng
@@ -359,24 +349,19 @@ export async function forgotPasswordController(request,response) {
             })
         }
 
-        const otp = otpGenerator.generate(6, { digits: true, upperCase: false, specialChars: false });
+        const otp = generatedOtp();
         const expireTime = new Date(Date.now() + 1 * 60 * 1000);
 
         const update = await UserModel.findByIdAndUpdate(user._id,{
             forgot_password_otp : otp,
             forgot_password_expiry : new Date(expireTime).toISOString()
         })
-        const emailContent = `
-            <h2>Hello ${user.name},</h2>
-            <p>Your OTP for reset password verification is: <strong>${otp}</strong></p>
-            <p>This OTP will expire in 1 minutes.</p>
-            <p>If you did not request this, please ignore this email.</p>
-        `;
+       
         console.log("🟢 Sending OTP email...");
         await sendEmail({
             sendTo : email,
             subject : "Forgot password from Sneaker Store",
-            html : emailContent
+            html : forgotPasswordTemplate({name, otp})
         })
         
 
@@ -590,9 +575,10 @@ export const deleteUserDetails = async(request,response)=>{
                 success : false
             })
         }
-
-        const deleteUser = await UserModel.deleteOne({_id : _id })
-
+        const deleteUser = await UserModel.updateOne(
+            { _id: _id },  // Điều kiện tìm sản phẩm
+            { $set: { publish: false } } // Chỉ cập nhật trường `publish`
+        );
         return response.json({
             message : "Delete successfully",
             error : false,
@@ -694,3 +680,31 @@ export const updateUserProfile = async (request, response) => {
         });
     }
 };
+export const deleteUser = async(request,response)=>{
+    try {
+        const { _id } = request.body 
+
+        if(!_id){
+            return response.status(400).json({
+                message : "provide _id ",
+                error : true,
+                success : false
+            })
+        }
+        const deleteUser = await UserModel.deleteOne(
+            { _id: _id },  // Điều kiện tìm sản phẩm
+        );
+        return response.json({
+            message : "Delete successfully",
+            error : false,
+            success : true,
+            data : deleteUser
+        })
+    } catch (error) {
+        return response.status(500).json({
+            message : error.message || error,
+            error : true,
+            success : false
+        })
+    }
+}

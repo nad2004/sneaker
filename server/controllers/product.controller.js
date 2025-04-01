@@ -64,9 +64,11 @@ export const getProductController = async(request,response)=>{
         }
         const skip = (page - 1) * limit
         const filters = {
-            ...(search && { name: { $regex: search, $options: "i" } }), // Nếu có `search`, thêm bộ lọc $text
-            price: { $gte: minPrice || 0, $lte: maxPrice || 100000000000000000000 }, // Điều kiện lọc theo giá
-          };
+            ...(search && { name: { $regex: search, $options: "i" } }), // Lọc theo tên nếu có search
+            ...(minPrice || maxPrice ? { price: { ...(minPrice && { $gte: minPrice }), ...(maxPrice && { $lte: maxPrice }) } } : {}), // Lọc theo giá nếu có
+            publish: true // Chỉ lấy sản phẩm đã publish
+        };
+        
         const [data,totalCount] = await Promise.all([
             ProductModel.find(filters).sort({createdAt : -1 }).skip(skip).limit(limit).populate('category'),
             ProductModel.countDocuments(filters)
@@ -196,8 +198,10 @@ export const deleteProductDetails = async(request,response)=>{
                 success : false
             })
         }
-
-        const deleteProduct = await ProductModel.deleteOne({_id : _id })
+        const deleteProduct = await ProductModel.updateOne(
+            { _id: _id },  // Điều kiện tìm sản phẩm
+            { $set: { publish: false } } // Chỉ cập nhật trường `publish`
+        );
 
         return response.json({
             message : "Delete successfully",

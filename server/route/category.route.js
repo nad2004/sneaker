@@ -9,6 +9,6 @@ categoryRouter.post('/get',getCategoryController)
 categoryRouter.post('/get-category-details',getCategoryDetails)
 categoryRouter.put('/update-category-details',auth,updateCategoryController)
 categoryRouter.post("/create",auth,createCategoryController)
-categoryRouter.delete("/delete",auth,deleteCategoryController)
+categoryRouter.put("/delete",auth,deleteCategoryController)
 
 export default categoryRouter

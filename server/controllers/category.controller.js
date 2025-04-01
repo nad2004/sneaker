@@ -104,7 +104,8 @@ export const deleteCategoryController = async(request,response)=>{
         const checkProduct = await ProductModel.find({
             category : {
                 "$in" : [ _id ]
-            }
+            },
+            publish : true
         }).countDocuments()
 
         if( checkProduct > 0 ){
@@ -114,8 +115,11 @@ export const deleteCategoryController = async(request,response)=>{
                 success : false
             })
         }
-
-        const deleteCategory = await CategoryModel.deleteOne({ _id : _id})
+        const deleteCategory = await CategoryModel.updateOne(
+            { _id: _id },  // Điều kiện tìm sản phẩm
+            { $set: { publish: false } } // Chỉ cập nhật trường `publish`
+        );
+       
 
         return response.json({
             message : "Delete category successfully",

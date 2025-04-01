@@ -75,6 +75,10 @@ const userSchema = new mongoose.Schema({
         type: String,
         enum: ["ADMIN", "CUSTOMER", "STAFF"],
         default: "CUSTOMER"
+    },
+    publish : {
+        type: Boolean,
+        default: true
     }
 }, {
     timestamps: true

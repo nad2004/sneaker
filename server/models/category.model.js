@@ -8,7 +8,12 @@ const categorySchema = new mongoose.Schema({
     image : {
         type : String,
         default : ""
+    },
+    publish : {
+        type : Boolean,
+        default : true
     }
+
 },{
     timestamps : true
 })

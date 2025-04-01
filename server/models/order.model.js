@@ -55,6 +55,10 @@ const orderSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
+    publish: {
+      type: Boolean,
+      default: true,
+    },
   },
   {
     timestamps: true,
