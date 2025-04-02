@@ -21,10 +21,7 @@ const ProductList: React.FC<ProductListProps> = ({ search, setSearch }) => {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [likedProducts, setLikedProducts] = useState<number[]>([]); // State để theo dõi các sản phẩm đã thích
-
-  
   const navigate = useNavigate();  // Khởi tạo navigate 
-
   const fetchProducts = async () => {
     try {
       const response = await fetch("http://localhost:8080/api/product/get", {
@@ -35,16 +32,14 @@ const ProductList: React.FC<ProductListProps> = ({ search, setSearch }) => {
   
       if (!response.ok) {
         throw new Error("Lỗi khi gọi API");
-      }
-  
+      } 
       const data = await response.json();
       if (data.success) {
         // Map lại để chuyển đổi _id thành id
         const productsWithId = data.data.map((product: any) => ({
           ...product,
           id: product._id, // Chuyển _id thành id
-        }));
-  
+        })); 
         setProducts(productsWithId); // Đặt state products với danh sách mới
         setTotalPages(data.totalNoPage);
       }
@@ -52,16 +47,13 @@ const ProductList: React.FC<ProductListProps> = ({ search, setSearch }) => {
       console.error("Lỗi khi lấy danh sách sản phẩm:", error);
     }
   };
-
   useEffect(() => {
     fetchProducts();
   }, [page, search,]);
-
   // Hàm điều hướng khi click vào sản phẩm
   const handleProductClick = (id: any) => {
     navigate(`/product-details/${id}`);  // Chuyển hướng đến trang chi tiết sản phẩm
   };
-
   // Hàm để thay đổi trạng thái liked của sản phẩm
   const handleLikeClick = (productId: any) => {
     setLikedProducts((prevLiked) =>
@@ -70,10 +62,6 @@ const ProductList: React.FC<ProductListProps> = ({ search, setSearch }) => {
         : [...prevLiked, productId]
     );
   };
-
- 
-  
-
   return (
     <div className="container mx-auto p-4 !max-w-full">
       <div className="grid grid-cols-6 gap-4"> {/* Chỉnh số cột thành 6 */}
@@ -82,7 +70,7 @@ const ProductList: React.FC<ProductListProps> = ({ search, setSearch }) => {
         <main className="col-span-5"> {/* Chỉnh lại cột sản phẩm */}
           <div className="relative">
             {/* Banner với chữ ghi đè */}
-            <img src="/assets/img16.png" alt="Banner" className="w-full h-64 object-cover" />
+            <img src="/assets/img16.png" alt="Banner" className="w-full h-64 !object-fill" />
             <div className="absolute top-1/2 left-0 transform -translate-y-1/2 p-4 text-white text-3xl ">
               <h2 className="font-bold ">Grocery store with different <br />treasures</h2>
               <p className="text-sm text-blue-500">We have prepared special discounts for you on grocery products...</p>
@@ -91,21 +79,17 @@ const ProductList: React.FC<ProductListProps> = ({ search, setSearch }) => {
             {/* Nav Bar */}
           <div className="flex items-center justify-between bg-gray-100 p-3 rounded-lg shadow-md mb-4 my-4">
               <span className="text-gray-600">Showing all 16 results</span>
-              
               <div className="flex items-center space-x-4">
                 <div className="flex items-center">
                   <span className="text-gray-500 mr-2">Sort:</span>
                   <select className="bg-white border rounded px-2 py-1">
                     <option>Sort by latest</option>
-                    
                   </select>
                 </div>
-
                 <div className="flex items-center">
                   <span className="text-gray-500 mr-2">Show:</span>
                   <select className="bg-white border rounded px-2 py-1">
                     <option>20 Items</option>
-                    
                   </select>
                 </div>
               </div>
@@ -118,8 +102,6 @@ const ProductList: React.FC<ProductListProps> = ({ search, setSearch }) => {
                   ? parseInt(product.price.replace(/[^0-9]/g, ""))
                   : product.price;
               const discountedPrice = product.discount > 0 ? price * (1 - product.discount / 100) : price;
-              
-
               return (                
                 <div
                   key={product.id}
@@ -133,7 +115,7 @@ const ProductList: React.FC<ProductListProps> = ({ search, setSearch }) => {
                         -{product.discount}%
                       </span>
                     )}
-                    <img src={product.image[0]} alt={product.name} className="w-full h-40 object-cover mb-2" />
+                    <img src={product.image[0]} alt={product.name} className="w-full h-40 !object-fill mb-2" />
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
@@ -141,10 +123,8 @@ const ProductList: React.FC<ProductListProps> = ({ search, setSearch }) => {
                       }}
                       className="absolute top-2 right-2 text-red-500"
                     >
-                    
                     </button>
                   </div>
-
                   {/* Phần nội dung sản phẩm */}
                   <div className="flex flex-col flex-grow">
                   <h3 className="font-bold text-lg line-clamp-2 h-14 overflow-hidden">

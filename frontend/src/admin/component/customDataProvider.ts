@@ -4,17 +4,6 @@ import simpleRestProvider from "ra-data-simple-rest";
 
 
 const apiUrl = "http://localhost:8080/api";
-const fetchCategoryName = async (categoryId: string) => {
-    try {
-        
-        const response = await axios.post(`${apiUrl}/category/get-category-detail`,  { id: categoryId } );
-     
-        return response.data?.data?.name || "Unknown Category";
-    } catch (error) {
-        console.error(`Failed to fetch category name for ${categoryId}`, error);
-        return "Unknown Category";
-    }
-};
 const fetchUserName = async (UserId: string) => {
     try {
         
@@ -28,15 +17,19 @@ const fetchUserName = async (UserId: string) => {
 };
 const fetchGetList = async (resource: string, params: any) => {
     const { page = 1, perPage = 10 } = params.pagination ?? {};
-    const url = `${apiUrl}/${resource}/get`;
+    let url;
+    if(resource === "unpublish"){
+        url = `${apiUrl}/product/get-unpublish`;
+    }else{
+        url = `${apiUrl}/${resource}/get`;
+    }
 
     try {
         const response = await axios.post(url, { page, limit: perPage });
         const json = response.data;
-
         let customData;
 
-        if (resource === "product") {
+        if (resource === "product" || resource === "unpublish") {
             customData = await Promise.all(
                 json.data.map(async (item: any) => {
                     const categoryIds = item.category || [];
@@ -62,7 +55,6 @@ const fetchGetList = async (resource: string, params: any) => {
                     };
                 })
             );
-            console.log(customData);
         } else {
             customData = json.data.map((item: any) => ({
                 ...item,
@@ -96,6 +88,7 @@ const searchProduct = async (resource: string, params: any) => {
         const response = await axios.post(`${apiUrl}/${resource}/search-product`, {
             search: q, page, limit: perPage
         });
+       
         const json = response.data;
         let dataWithCategoryNames;
         if (resource === "product") {
@@ -104,12 +97,12 @@ const searchProduct = async (resource: string, params: any) => {
                 json.data.map(async (item: any) => {
                     const categoryIds = item.category || [];
                     const categoryNames = await Promise.all(
-                        categoryIds.map((item: any) => fetchCategoryName(item))
+                        categoryIds.map((item: any) => item.name)
                     );
-                    // console.log(categoryNames);
+
                     return {
                         ...item,
-                        id: item._id || item.id,
+                        id: item._id || item.id || String(Math.random()), // Ensure id always exists
                         category: categoryNames,
                     };
                 })
@@ -138,8 +131,6 @@ const searchProduct = async (resource: string, params: any) => {
 const fetchGetOne = async (resource: string, params: any) => {
    
     try {
-        
-        console.log(`${apiUrl}/${resource}/get-${resource}-details`);
         let customData;
         const response = await axios.post(`${apiUrl}/${resource}/get-${resource}-details`, { id: params.id });
         const json = response.data;
@@ -155,7 +146,6 @@ const fetchGetOne = async (resource: string, params: any) => {
         } else {
             customData = {id: json.data._id || json.data.id, ...json.data};
         }
-        console.log(customData);
         return { data: customData};
         
     } catch (error) {
@@ -179,12 +169,13 @@ const customDataProvider: DataProvider = {
     },
 
     create: async (resource, params) => {
-        console.log(params.data);
         try {
             const token = localStorage.getItem("accessToken");
             const response = await axios.post(`${apiUrl}/${resource}/create`, 
                 { ...params.data, image: [] },
-                { headers: { Authorization: `Bearer ${token}` } }
+                {
+                    headers: { authorization: `${token}` } // Headers phải là tham số thứ 3
+                }
             );
             return { data: { ...response.data, id: response.data._id || response.data.id } };
         } catch (error) {
@@ -202,7 +193,9 @@ const customDataProvider: DataProvider = {
             const response = await axios.put(
                 `${apiUrl}/${resource}/update-${resource}-details`, 
                 { _id: params.id, ...params.data },
-                { headers: { Authorization: `Bearer ${token}` } }
+                {
+                    headers: { authorization: `${token}` } // Headers phải là tham số thứ 3
+                }
             );
             const updated = await axios.post(`${apiUrl}/${resource}/get-${resource}-details`, { id: params.id });
             return { data: { ...updated.data.data, id: updated.data.data._id || response.data.id } };

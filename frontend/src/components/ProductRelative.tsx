@@ -73,7 +73,7 @@ const ProductRelative: React.FC<{ currentProductId: string }> = ({ currentProduc
       {products.map((product) => (
         <div key={product._id} className="border p-4 rounded-lg flex flex-col h-full">
           {/* Ảnh sản phẩm */}
-          <img src={product.image[0]} alt={product.name} className="w-full h-48  mb-4 object-contain" />
+          <img src={product.image[0]} alt={product.name} className="w-full h-48  mb-4 !object-fill" />
           
           {/* Tên sản phẩm */}
           <h3 className="text-xl font-semibold flex-grow">{product.name}</h3>

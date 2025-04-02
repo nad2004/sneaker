@@ -173,7 +173,7 @@ const CheckOutList: React.FC = () => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+          authorization: `${localStorage.getItem("accessToken")}`,
         },
         body: JSON.stringify({ userId, products, totalAmt, payment_method, delivery_address }), // Truyền userId từ localStorage
       });
@@ -181,8 +181,8 @@ const CheckOutList: React.FC = () => {
       const data = await response.json();
       if (data.success) {
         alert("Đặt hàng thành công!");
+        window.dispatchEvent(new Event("cartUpdated"));
         navigate("/");
-        
       } else {
         alert("Đặt hàng thất bại: " + data.message);
       }

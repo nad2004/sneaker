@@ -90,6 +90,45 @@ export const getProductController = async(request,response)=>{
         })
     }
 }
+export const getProductUnpublishController = async(request,response)=>{
+    try {
+        
+        let { page = 1, limit = 10, search, minPrice, maxPrice } = request.body;
+        if(!page){
+            page = 1
+        }
+
+        if(!limit){
+            limit = 10
+        }
+        const skip = (page - 1) * limit
+        const filters = {
+            ...(search && { name: { $regex: search, $options: "i" } }), // Lọc theo tên nếu có search
+            ...(minPrice || maxPrice ? { price: { ...(minPrice && { $gte: minPrice }), ...(maxPrice && { $lte: maxPrice }) } } : {}), // Lọc theo giá nếu có
+            publish: false // Chỉ lấy sản phẩm không publish
+        };
+        
+        const [data,totalCount] = await Promise.all([
+            ProductModel.find(filters).sort({createdAt : -1 }).skip(skip).limit(limit).populate('category'),
+            ProductModel.countDocuments(filters)
+        ])
+
+        return response.json({
+            message : "Product data",
+            error : false,
+            success : true,
+            totalCount : totalCount,
+            totalNoPage : Math.ceil( totalCount / limit),
+            data : data
+        })
+    } catch (error) {
+        return response.status(500).json({
+            message : error.message || error,
+            error : true,
+            success : false
+        })
+    }
+}
 
 export const getProductByCategory = async (request, response) => {
     try {
@@ -105,7 +144,8 @@ export const getProductByCategory = async (request, response) => {
   
       const filters = {
         ...(query && { category: { $in: [new mongoose.Types.ObjectId(query)] } }), 
-        price: { $gte: minPrice || 0, $lte: maxPrice || 10000000 },                 
+        price: { $gte: minPrice || 0, $lte: maxPrice || 10000000 },    
+        publish: true,             
       };
   
       const products = await ProductModel.find(filters)
@@ -242,19 +282,26 @@ export const searchProduct = async (request, response) => {
         const skip = (page - 1) * limit;
 
         const data = await ProductModel.aggregate([
-            {
-                $match: query
-            },
+            { $match:  {...query, publish: true } },
             {
                 $addFields: {
-                    isMatchStart: { $cond: [{ $regexMatch: { input: "$name", regex: `^${search}`, options: "i" } }, 1, 0] }
+                    isMatchStart: { 
+                        $cond: [{ $regexMatch: { input: "$name", regex: `^${search}`, options: "i" } }, 1, 0]
+                    }
+                }
+            },
+            { 
+                $lookup: {
+                    from: "categories", // Tên collection categories trong MongoDB
+                    localField: "category",
+                    foreignField: "_id",
+                    as: "category"
                 }
             },
             { $sort: sortQuery },
             { $skip: skip },
             { $limit: limit }
         ]);
-
         const dataCount = await ProductModel.countDocuments(query);
 
         return response.json({

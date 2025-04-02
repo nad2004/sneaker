@@ -75,7 +75,7 @@ const ProductDetails: React.FC = () => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("accessToken")}`, // Nếu có đăng nhập
+          authorization: `${localStorage.getItem("accessToken")}`, // Nếu có đăng nhập
         },
         body: JSON.stringify({
           // Nếu có đăng nhập
@@ -85,14 +85,10 @@ const ProductDetails: React.FC = () => {
           size: selectedSize
         }),
       });
-
       const data = await response.json();
-  
       if (data.success) {
         console.log("✅ Thêm vào giỏ hàng thành công!", data.cart);
-        // Kích hoạt sự kiện để cập nhật Header
         window.dispatchEvent(new Event("cartUpdated"));
-
         navigate("/cart"); // Chuyển hướng đến giỏ hàng
       } else {
         alert(data.message);
@@ -102,8 +98,6 @@ const ProductDetails: React.FC = () => {
       console.error("❌ Lỗi kết nối API:", error);
     }
   };
-
-  
   // Hàm tăng số lượng
   const increaseQuantity = () => {
     if (quantity < (product?.stock || 1)) {
@@ -112,32 +106,25 @@ const ProductDetails: React.FC = () => {
       alert("Sản phẩm đã hết hàng.");
     }
   };
-
   // Hàm giảm số lượng
   const decreaseQuantity = () => {
     if (quantity > 1) {
       setQuantity(quantity - 1);
     }
   };
-
   if (loading) {
     return <div>Đang tải dữ liệu...</div>;
   }
-
   if (error) {
     return <div>{error}</div>;
   }
-
   if (!product) {
     return <div>Không tìm thấy sản phẩm.</div>;
   }
-
   // Tính giá sau khi giảm giá
   const discountedPrice = product.discount
   ? (parseFloat(product.price) * (1 - product.discount / 100)).toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })
   : parseFloat(product.price).toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
-
-
   return (
     <div className="container mx-auto p-4">
       {/* Breadcrumb */}
@@ -151,7 +138,7 @@ const ProductDetails: React.FC = () => {
           <img
             src={mainImage}
             alt={product.name}
-            className="w-full h-96 object-contain mb-4"
+            className="w-full h-96 !object-fill mb-4"
           />
           <div className="flex gap-5 justify-center">
             {/* Ảnh phụ */}
@@ -160,7 +147,7 @@ const ProductDetails: React.FC = () => {
                 key={index}
                 src={img}
                 alt={`product-${index}`}
-                className="w-24 h-24 object-contain cursor-pointer border"
+                className="w-24 h-24 !object-fill cursor-pointer border"
                 onClick={() => setMainImage(img)} // Khi click vào ảnh phụ sẽ thay đổi ảnh chính
               />
             ))}
@@ -188,7 +175,7 @@ const ProductDetails: React.FC = () => {
           <div className="flex items-center mb-4">
             <button 
               onClick={decreaseQuantity} 
-              className="p-2 bg-gray-300 text-gray-700 rounded-l"
+              className="p-4 bg-none text-gray-700 rounded-none text-xl"
               disabled={quantity <= 1}
             >
               -
@@ -196,14 +183,19 @@ const ProductDetails: React.FC = () => {
             <input
               type="number"
               value={quantity}
-              readOnly // Chỉ đọc, không cho thay đổi trực tiếp
-              className="p-2 w-16 text-center border border-gray-300"
+              onChange={(e) => {
+                let value = parseInt(e.target.value, 10) || 1; // Chuyển đổi input sang số nguyên, mặc định là 1 nếu rỗng
+               
+                if (value > product.stock) value = product.stock; // Không cho phép nhập lớn hơn stock
+                setQuantity(value); // Cập nhật state
+              }}
+              className="p-2 w-24 text-center border border-gray-300"
               min="1"
               max={product.stock}
             />
             <button 
               onClick={increaseQuantity} 
-              className="p-2 bg-gray-300 text-gray-700 rounded-r"
+              className="p-4 bg-none text-gray-700 rounded-none text-xl"
               disabled={quantity >= product.stock}
             >
               +

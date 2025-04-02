@@ -1,6 +1,6 @@
 import GenericList from '../component/GenericList';
 import { GenericCreate, GenericEdit } from '../component/GenericForm';
-import  OrderFormShow  from '../component/orderDetailShow';
+import  OrderDetails  from '../component/OrderTracking';
 
 const ProductList = () => (
     <GenericList
@@ -47,7 +47,21 @@ const ProductCreate = () => (
         ]}
     />
 );
-
+const UnpublishProductList = () => (
+    <GenericList
+    resource="unpublish"
+    title="Product"
+    fields={[
+        { source: "image", label: "  ", type: "image" }, // Thêm type: "image"
+        { source: "name", label: "Products" },
+        { source: "price", label: "Price", type: "number" },
+        { source: "unit", label: "Unit" },
+        { source: "stock", label: "Quantity", type: "number" },
+        { source: "category", label: "Brand" },
+        { source: "publish", label: "Publish"}
+    ]}
+/>
+);
 const UserList = () => (
     <GenericList
         resource="user"
@@ -114,18 +128,10 @@ const OrderList = () => (
     />
 );
 const OrderShow = () => (
-    <OrderFormShow
+    <OrderDetails
         resource="order"
-        fields={[
-            { source: "userName", label: "Name"},
-            { source: "orderId", label: "OrderId" },
-            { source: "createdAt", label: "Ngày Đặt", type: "date" },
-            { source: "delivery_address", label: "Địa chỉ giao hàng" },
-            { source: "payment_status", label: "Trạng thái thanh toán" },
-            { source: "delivery_status", label: "Trạng thái giao hàng" },
-            { source: "products", label: "Sản Phẩm", type: "array" },
-        ]}
+
     />
 );
 
-export { ProductList, CategoryCreate, CategoryEdit, OrderShow, UserList, UserEdit, Category, ProductEdit, ProductCreate, OrderList };
+export { ProductList, UnpublishProductList, CategoryCreate, CategoryEdit, OrderShow, UserList, UserEdit, Category, ProductEdit, ProductCreate, OrderList };

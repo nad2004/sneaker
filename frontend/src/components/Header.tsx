@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { FaUser, FaHeart, FaShoppingCart, FaSearch } from "react-icons/fa";
+import { FaUser, FaShoppingCart, FaSearch } from "react-icons/fa";
 import iconGeimi from "./assets/gemini-color.svg"
 import { Link, useNavigate } from "react-router-dom";
 import { TextField, Autocomplete, CircularProgress } from "@mui/material";
@@ -66,7 +66,6 @@ const ChatBox = ({ onClose }) => {
   );
 };
 const Header: React.FC<HeaderProps> = ({ search, setSearch }) => {
-  const [likedCount, setLikedCount] = useState(0);
   const [user, setUser] = useState<{ name: string; avatar: string; role: string | null } | null>(null);
   const [productOptions, setProductOptions] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -82,17 +81,11 @@ const Header: React.FC<HeaderProps> = ({ search, setSearch }) => {
       setUser({ name: storedUser.name, avatar: storedUser.avatar, role: storedUser.role});
     }
   }, [localStorage.getItem("user")]);
-
   const handleLogout = () => {
     localStorage.removeItem("user");
     setUser(null);
     navigate("/login");
   };
-
-  const handleLikeClick = () => {
-    setLikedCount(likedCount + 1);
-  };
-
   const handleSearchClick = () => {
     const queryParams = new URLSearchParams({
       search: search
@@ -127,10 +120,11 @@ const Header: React.FC<HeaderProps> = ({ search, setSearch }) => {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+            authorization: `${localStorage.getItem("accessToken")}`,
           },
         });
         const data = await response.json();
+        console.log(data.data)
         setCartCount(data.data.length);
       } catch (error) {
         console.error("Error fetching cart count:", error);
@@ -169,8 +163,7 @@ const Header: React.FC<HeaderProps> = ({ search, setSearch }) => {
               </span>
             </div>
             <div className="flex gap-4">
-              <a href="#" className="hover:text-gray-800">English ▾</a>
-              <a href="#" className="hover:text-gray-800">USD ▾</a>
+              <a href="#" className="hover:text-gray-800">English</a>
               <a href="#" className="hover:text-gray-800">Order Tracking</a>
             </div>
           </div>
@@ -263,12 +256,7 @@ const Header: React.FC<HeaderProps> = ({ search, setSearch }) => {
                 <FaUser /> Sign Up / Login
               </Link>
             )}
-            <a href="#" className="relative hover:text-gray-900" onClick={handleLikeClick}>
-              <FaHeart />
-              <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs px-1 rounded-full">
-                {likedCount}
-              </span>
-            </a>
+           
             <Link to="/cart" className="relative hover:text-gray-900">
               <FaShoppingCart />
               <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs px-1 rounded-full">
@@ -280,8 +268,8 @@ const Header: React.FC<HeaderProps> = ({ search, setSearch }) => {
 
         <nav className="border-t px-6 flex justify-between">
           <ul className="flex gap-6 py-3 text-gray-700 font-medium">
-            <li><Link to="/" className="hover:text-red-500">Home ▾</Link></li>
-            <li><Link to="/shop" className="hover:text-red-500">Shop ▾</Link></li>
+            <li><Link to="/" className="hover:text-red-500">Home</Link></li>
+            <li><Link to="/shop" className="hover:text-red-500">Shop</Link></li>
             <li><Link to="/sneakers" className="hover:text-red-500">Sneakers</Link></li>
             <li><Link to="/accessories" className="hover:text-red-500">Clothes & Accessories</Link></li>
             <li><Link to="/blog" className="hover:text-red-500">Blog</Link></li>

@@ -1,4 +1,4 @@
-import { List, Datagrid, TextField, NumberField,  DateField, EditButton, DeleteButton, SearchInput, TopToolbar, Pagination, FunctionField } from 'react-admin';
+import { List, Datagrid, TextField, useRedirect, NumberField,  DateField, EditButton, DeleteButton, SearchInput, TopToolbar, Pagination, FunctionField } from 'react-admin';
 import { Button } from '@mui/material';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
@@ -64,7 +64,7 @@ const GenericList = ({ resource, title, fields }: GenericListProps) => {
     const listFilters = [
         <SearchInput key="search" source="q" alwaysOn placeholder="Search..." />,
     ];
-    
+    const redirect = useRedirect();
     return (
         <List
             perPage={10}
@@ -119,22 +119,38 @@ const GenericList = ({ resource, title, fields }: GenericListProps) => {
                             return <TextField key={field.source} source={field.source} label={field.label || field.source} />;
                     }
                 })}
-                
-              <FunctionField
+                {resource === "unpublish" ? (
+                    null
+                ) : resource === "order" ? (<FunctionField
                     label=""
                     sx={{ textAlign: 'center' }}
                     render={(record) =>{
-                       
+
                         return (
+                            <>
                             <div style={{ display: 'flex', justifyContent: 'center', gap: '8px' }}>
-                                
-                                
-                                <EditButton record={record} />
-                                <DeleteButton record={record} />
+                                <Button variant='outlined' onClick={() => redirect(`/order/${record._id}`)}>
+                                    Show
+                                </Button>                            
                             </div>
+                        </>
                         )
                     }}
-                />
+                />): <FunctionField
+                label=""
+                sx={{ textAlign: 'center' }}
+                render={(record) =>{
+                    
+                    return (
+                        <div style={{ display: 'flex', justifyContent: 'center', gap: '8px' }}>
+                            <EditButton record={record} />
+                            <DeleteButton record={record} />
+                        </div>
+                    )
+                }}
+            />}
+            
+              
             </Datagrid>
         </List>
     );

@@ -26,7 +26,7 @@ const Cart: React.FC = () => {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+          authorization: `${localStorage.getItem("accessToken")}`,
         },
       });
 
@@ -60,7 +60,7 @@ const Cart: React.FC = () => {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("accessToken")}`!,
+          authorization: `${localStorage.getItem("accessToken")}`,
         },
         body: JSON.stringify({ _id: itemId, qty: newQuantity }),
       });
@@ -84,7 +84,7 @@ const Cart: React.FC = () => {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+          authorization: `${localStorage.getItem("accessToken")}`,
         },
         body: JSON.stringify({ _id: itemId }),
       });
@@ -92,6 +92,7 @@ const Cart: React.FC = () => {
       if (!response.ok) throw new Error("Xóa sản phẩm thất bại");
 
       // 🔄 Sau khi xóa, gọi lại API để lấy dữ liệu mới nhất
+      window.dispatchEvent(new Event("cartUpdated"));
       await fetchCart();
     } catch (error) {
       console.error("Lỗi khi xóa sản phẩm:", error);

@@ -5,7 +5,7 @@ import { Admin, Resource, CustomRoutes } from 'react-admin';
 import authProvider from './admin/component/authProvider.tsx'; 
 import CustomLayout from './admin/layouts/default';
 import StaffCustomLayout from './staff/layouts/default';
-import { ProductList, CategoryCreate, CategoryEdit, UserList, Category, ProductEdit, UserEdit, OrderShow, ProductCreate, OrderList } from './admin/pages/Page';
+import { ProductList, UnpublishProductList, CategoryCreate, CategoryEdit, UserList, Category, ProductEdit, UserEdit, OrderShow, ProductCreate, OrderList } from './admin/pages/Page';
 import { StaffProductList,  StaffOrderShow, StaffProductCreate, StaffOrderList, StaffProductEdit } from './staff/pages/Page';
 import myDataProvider from './admin/component/customDataProvider';
 import Dashboard from './admin/pages/Dashboard';
@@ -73,14 +73,16 @@ import VerifyOtpLossPW from './page/auth/VerifyOtpLossPW.tsx';
               {/* Điều hướng chính xác đến /admin/dashboard */}
               <Route path="/" element={<Navigate to="/dashboard" replace />} />
               <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/order/:orderId" element={<OrderShow />} />
             </CustomRoutes>
 
             {/* Resource tương ứng */}
             <Resource name="dashboard" options={{ label: 'Dashboard' }} />
+            <Resource name="product-unpublish" list={UnpublishProductList} edit={ProductEdit}/>
             <Resource name="product" list={ProductList} create={ProductCreate} edit={ProductEdit} />
             <Resource name="user" list={UserList} edit={UserEdit} />
             <Resource name="category" list={Category} edit={CategoryEdit} create={CategoryCreate} />
-            <Resource name="order" list={OrderList} edit={OrderShow} />
+            <Resource name="order" list={OrderList} />
           
           </Admin>
         }

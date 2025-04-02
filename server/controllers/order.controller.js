@@ -155,7 +155,7 @@ export const getOrderDetails = async(request,response)=>{
     try {
         const { id } = request.body 
 
-        const order = await OrderModel.findOne({ _id : id })
+        const order = await OrderModel.findOne({ _id : id }).populate('products.productId')
 
 
         return response.json({

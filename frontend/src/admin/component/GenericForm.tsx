@@ -45,6 +45,7 @@ const GenericForm = ({ fields, resource }: { fields: any[]; resource: string }) 
                             />
                         );
                     }
+                    
                     if (resource === "user" && field.source === "email") {
                         return (
                             <TextInput key={field.source} source={field.source} label={field.label} disabled/>
@@ -87,7 +88,7 @@ const GenericForm = ({ fields, resource }: { fields: any[]; resource: string }) 
                     if (field.type === "number") {
                         return <NumberInput key={field.source} source={field.source} label={field.label} />;
                     }
-
+                    
                     return <TextInput key={field.source} source={field.source} label={field.label} />;
                 })}
 
@@ -228,6 +229,7 @@ export const GenericCreate = ({ resource, fields }: { resource: string; fields: 
 // Component Edit với nút "Back" ở góc trên trái và không có nút Delete
 export const GenericEdit = ({ resource, fields }: { resource: string; fields: any[] }) => {
     const redirect = useRedirect();
+    console.log(fields)
     return (
         <Edit resource={resource} actions={false}>
             <Card>

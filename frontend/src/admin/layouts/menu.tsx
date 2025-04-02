@@ -13,7 +13,8 @@ const CustomMenu = (props: MenuProps) => {
                 leftIcon={<Home />} 
                 onClick={() => navigate('/dashboard')} 
             />
-            <Menu.Item to="/product" primaryText="Products" leftIcon={<DoNotStep />} />
+            <Menu.Item to="/product" primaryText="Products" leftIcon={<Warehouse />} />
+            <Menu.Item to="/product-unpublish" primaryText="unpublishProducts" leftIcon={<DoNotStep />} />
             <Menu.Item to="/category" primaryText="Product Categories" leftIcon={<Category />} />
             <Menu.Item to="/user" primaryText="User" leftIcon={<People />} />
             <Menu.Item to="/order" primaryText="Order" leftIcon={<ShoppingCart />} />

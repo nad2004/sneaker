@@ -265,14 +265,20 @@ const HomePage = () => {
         </Button>
     </motion.div>
       <motion.div initial="hidden" whileInView="visible" variants={fadeInVariant} className="grid grid-cols-6 gap-4">
-        {products.slice(0, 6).map((product) => (
+        {[...products]
+              .sort(() => Math.random() - 0.5) // Trộn mảng ngẫu nhiên
+              .slice(0, 6) // Lấy 4 sản phẩm đầu tiên
+              .map((product, index) => (
           <ProductCard key={product.id} product={product} />
         ))}
       </motion.div>
     </motion.div>
   <SpotlightCard className="custom-spotlight-card mt-4" spotlightColor="rgba(0, 229, 255, 0.2)">
   <motion.div initial="hidden" whileInView="visible" variants={fadeInVariant} className="grid grid-cols-4 gap-12">
-  {products.slice(8, 12).map((product, index) => (
+  {[...products]
+              .sort(() => Math.random() - 0.5) // Trộn mảng ngẫu nhiên
+              .slice(0, 4) // Lấy 4 sản phẩm đầu tiên
+              .map((product, index) => (
     <Card key={index} className="relative shadow-md rounded-lg overflow-hidden ">
       {/* Hình ảnh sản phẩm */}
       <motion.div initial="hidden" whileInView="visible" variants={fadeInVariant}
@@ -329,7 +335,10 @@ const HomePage = () => {
 </motion.div>
 <motion.div initial="hidden" whileInView="visible" variants={fadeInVariant} className="grid grid-cols-3 gap-6">
   {/* Hàng 1: 3 sản phẩm đầu tiên */}
-  {products.slice(0, 3).map((product, index) => (
+  {[...products]
+              .sort(() => Math.random() - 0.5) // Trộn mảng ngẫu nhiên
+              .slice(0, 3) // Lấy 3 sản phẩm đầu tiên
+              .map((product, index) => (
     <Card key={index} className="relative shadow-md rounded-lg overflow-hidden p-4 h-72" >
       <motion.div initial="hidden" whileInView="visible" variants={fadeInVariant} className="flex items-center h-full">
         {/* Hình ảnh sản phẩm */}
@@ -362,7 +371,10 @@ const HomePage = () => {
   ))}
 
   {/* Hàng 2: 2 sản phẩm tiếp theo */}
-  {products.slice(3, 5).map((product, index) => (
+  {[...products]
+              .sort(() => Math.random() - 0.5) // Trộn mảng ngẫu nhiên
+              .slice(0, 2) // Lấy 2 sản phẩm đầu tiên
+              .map((product, index) => (
     <Card
       key={index + 3} /* Đảm bảo key duy nhất */
       className={`relative shadow-md rounded-lg overflow-hidden p-4 h-72 ${
@@ -456,7 +468,10 @@ const HomePage = () => {
  <motion.div initial="hidden" whileInView="visible" variants={fadeInVariant} className="grid grid-cols-3 gap-4 px-6 mt-8">
             {/* Cột trái */}
             <motion.div initial="hidden" whileInView="visible" variants={fadeInVariant} className="grid grid-cols-2 gap-4">
-                {products.slice(20, 24).map((product, index) => (
+                {[...products]
+              .sort(() => Math.random() - 0.5) // Trộn mảng ngẫu nhiên
+              .slice(0, 4) // Lấy 4 sản phẩm đầu tiên
+              .map((product, index) => (
                      <Card key={product.id} className="shadow-md rounded-lg w-56">
                      <motion.div initial="hidden" whileInView="visible" variants={fadeInVariant} className="relative h-60 flex justify-center items-center bg-gray-100">
                      <CardMedia
@@ -539,7 +554,10 @@ const HomePage = () => {
 
             {/* Cột phải */}
             <motion.div initial="hidden" whileInView="visible" variants={fadeInVariant} className="grid grid-cols-2 gap-4">
-                {products.slice(16, 20).map((product, index) => (
+                {[...products]
+                  .sort(() => Math.random() - 0.5) // Trộn mảng ngẫu nhiên
+                  .slice(0, 4) // Lấy 4 sản phẩm đầu tiên
+                  .map((product, index) => (
                      <Card key={product.id} className="shadow-md rounded-lg w-56">
                      <motion.div initial="hidden" whileInView="visible" variants={fadeInVariant} className="relative h-60 flex justify-center items-center bg-gray-100">
                      <CardMedia
