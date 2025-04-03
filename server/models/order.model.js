@@ -44,8 +44,8 @@ const orderSchema = new mongoose.Schema(
     },
     delivery_status: {
       type: String,
-      enum: ["Pending", "Delivered"], // Only allows these values
-      default: "Pending",
+      enum: ["OrderMade", "OrderPaid", "Shipped", "Complete"], // Only allows these values
+      default: "OrderMade",
     },
     subTotalAmt: {
       type: Number,

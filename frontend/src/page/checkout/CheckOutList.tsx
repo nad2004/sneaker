@@ -181,7 +181,7 @@ const CheckOutList: React.FC = () => {
       console.error("Lỗi khi tạo order:", error);
       alert("Đã xảy ra lỗi khi đặt hàng.");
     }
-    window.location.reload();
+    // window.location.reload();
   };
 
   // Handle form input change

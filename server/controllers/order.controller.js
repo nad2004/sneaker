@@ -7,7 +7,7 @@ import path from "path";
 import fs from "fs";
 import ExcelJS from "exceljs";
 import { fileURLToPath } from "url";
-
+import PDFDocument from "pdfkit";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 export async function createNewOrderController(request, response) {
@@ -32,7 +32,7 @@ export async function createNewOrderController(request, response) {
             products,
             payment_method: payment_method,
             payment_status: "Pending",
-            delivery_status: "Pending",
+            delivery_status: "OrderMade",
             delivery_address: delivery_address || "",
             subTotalAmt: totalAmt,
             totalAmt,
@@ -300,37 +300,59 @@ export const updateOrderStatus = async (request, response) => {
             });
         }
 
-        if (delivery_status && !["Pending", "Delivered"].includes(delivery_status)) {
+        if (delivery_status && !["OrderMade", "OrderPaid", "Shipped", "Complete"].includes(delivery_status)) {
             return response.status(400).json({
                 message: "Invalid delivery status",
                 error: true,
                 success: false,
             });
         }
+
         if (payment_status && !["Pending", "Success"].includes(payment_status)) {
             return response.status(400).json({
-                message: "Invalid delivery status",
+                message: "Invalid payment status", // ✅ Đã sửa lại đúng lỗi
                 error: true,
                 success: false,
             });
         }
-        const updateOrder = await OrderModel.updateOne({ _id: id }, { ...request.body });
+
+        // Kiểm tra xem đơn hàng có tồn tại không
+        const existingOrder = await OrderModel.findById(id);
+        if (!existingOrder) {
+            return response.status(404).json({
+                message: "Order not found",
+                error: true,
+                success: false,
+            });
+        }
+
+        // Chỉ cập nhật các trường được phép
+        const updateFields = {};
+        if (delivery_status) updateFields.delivery_status = delivery_status;
+        if (payment_status) updateFields.payment_status = payment_status;
+
+        const updateOrder = await OrderModel.findByIdAndUpdate(
+            id,
+            { $set: updateFields }, // ✅ Chỉ cập nhật trường hợp lệ
+            { new: true } // ✅ Trả về bản ghi mới sau khi cập nhật
+        );
 
         return response.json({
             message: "Order updated successfully",
-            data: updateOrder,
+            data: updateOrder, // ✅ Trả về thông tin đơn hàng mới nhất
             error: false,
             success: true
         });
 
     } catch (error) {
         return response.status(500).json({
-            message: error.message || error,
+            message: error.message || "Internal Server Error",
             error: true,
             success: false
         });
     }
 };
+
 export const exportExcelOrder = async (req, res) => {
     try {
         const workbook = new ExcelJS.Workbook();
@@ -384,3 +406,61 @@ export const exportExcelOrder = async (req, res) => {
 
     }
 }
+export const generateInvoicePDF = async (req, res) => {
+    try {
+        const { orderId } = req.body;
+
+        // Tìm đơn hàng theo orderId
+        const order = await OrderModel.findOne({ _id: orderId }).populate("userId").populate("products.productId");
+
+        if (!order) {
+            return res.status(404).json({ message: "Order not found" });
+        }
+
+        // Tạo đường dẫn file PDF
+       // Tạo đường dẫn file PDF trên hệ thống
+       const invoicePath = path.join(__dirname, `invoice.pdf`);
+
+       // Khởi tạo PDFKit
+       const doc = new PDFDocument();
+
+       // Ghi PDF vào file hệ thống
+       doc.pipe(fs.createWriteStream(invoicePath));
+
+        // Tiêu đề hóa đơn
+        doc.fontSize(22).text("INVOICE", { align: "center" });
+        doc.moveDown();
+
+        // Thông tin khách hàng
+        doc.fontSize(14).text(`Customer: ${order.userId.name || "N/A"}`);
+        doc.text(`Email: ${order.userId.email || "N/A"}`);
+        doc.text(`Address: ${order.delivery_address || "N/A"}`);
+        doc.text(`Payment Method: ${order.payment_method}`);
+        doc.text(`Payment Status: ${order.payment_status}`);
+        doc.moveDown();
+
+        // Thông tin sản phẩm
+        doc.fontSize(16).text("Order Details:", { underline: true });
+        order.products.forEach((item, index) => {
+            doc.fontSize(12).text(
+                `${index + 1}. ${item.productId.name || "Unknown Product"} - Size: ${item.size}, Quantity: ${item.quantity} x $${item.productId.price}`
+            );
+        });
+
+        // Tổng tiền
+        doc.moveDown();
+        doc.fontSize(14).text(`Subtotal: ${order.subTotalAmt.toFixed(2)} đ `);
+        doc.fontSize(14).text(`Total: ${order.totalAmt.toFixed(2)} đ `, { align: "right" });
+
+        // Kết thúc PDF
+        doc.end();
+        doc.on("end", () => {
+            res.setHeader("Content-Type", "application/pdf");
+            res.setHeader("Content-Disposition", `attachment; filename="invoice.pdf"`);
+            const fileStream = fs.createReadStream(invoicePath);
+            fileStream.pipe(res); // Gửi PDF về client
+        });
+    } catch (error) {
+        res.status(500).json({ message: "Error generating invoice", error: error.message });
+    }
+};

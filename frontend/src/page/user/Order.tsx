@@ -133,7 +133,7 @@ const OrderPage = () => {
                   <td className="py-3 px-6 text-center">
                     <span
                       className={`px-3 py-1 text-xs font-semibold rounded-full ${
-                        order.delivery_status === "Delivered"
+                        order.delivery_status === "Complete"
                           ? "bg-green-100 text-green-700"
                           : "bg-yellow-100 text-yellow-700"
                           
@@ -182,7 +182,7 @@ const OrderPage = () => {
                 ${(item.quantity * item.productId?.price).toLocaleString()}
               </div>
               {/* Nút đánh giá */}
-              ${selectedOrder?.delivery_status === "Delivered" && (
+              ${selectedOrder?.delivery_status === "Complete" && (
                 <button
                 className="ml-4 px-4 py-2 bg-blue-500 text-white rounded"
                 onClick={() => setSelectedProduct(item)}

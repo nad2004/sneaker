@@ -1,5 +1,5 @@
-import React from "react";
-import { Card, Typography, Chip, Button, Divider } from "@mui/material";
+
+import { Card, Typography, Chip, Button, Divider, Dialog, DialogActions, DialogContent, DialogTitle } from "@mui/material";
 import { CheckCircle, LocalShipping, Payment, ShoppingCart } from "@mui/icons-material";
 import { useParams } from "react-router-dom";
 import { useState, useEffect } from "react";
@@ -9,22 +9,65 @@ import { useTheme, useMediaQuery } from '@mui/material';
 const OrderDetails = () => {
   const { orderId } = useParams(); // Lấy orderId từ URL
   const [order, setOrder] = useState<any>(null);
+  const [open, setOpen] = useState(false);
   const theme = useTheme(); // Get current theme
   const isDarkMode = useMediaQuery('(prefers-color-scheme: dark)'); // Detect dark mode
 
+  const fetchOrderDetails = async () => {
+    try {
+      const response = await axios.post("http://localhost:8080/api/order/get-order-details", {
+        id: orderId, // Gửi orderId trong body của request
+      });
+      setOrder(response.data.data); // Lưu dữ liệu trả về vào state
+      console.log(response.data.data);
+    } catch (error) {
+      console.error("Error fetching order details:", error);
+    }
+  };
+  const handleExportInvoice = () => {
+    try{
+      axios.post("http://localhost:8080/api/order/export-invoice", 
+        { orderId },  // Truyền vào body
+        { responseType: "blob" } // ⚠️ Cần để tải file PDF
+      ).then((response) => {
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+        const link = document.createElement("a");
+        link.href = url;
+        link.setAttribute("download", `invoice.pdf`); // Đặt tên file khi tải về
+        document.body.appendChild(link);
+        link.click(); // Tự động tải về
+      });
+    }
+    catch (err){
+      console.log(err)
+    }
+  }
+  const handleNextStep = () => {
+      setOpen(true); // Hiển thị hộp thoại
+    
+  };
+  const handleConfirm = () => {
+    let updateStatus;
+    if(order.delivery_status === "OrderMade"){
+      updateStatus = "OrderPaid";
+    }
+    if(order.delivery_status === "OrderPaid"){
+      updateStatus = "Shipped";
+    }
+    if(order.delivery_status === "Shipped"){
+      updateStatus = "Complete";
+    }
+    try{
+      const response = axios.put("http://localhost:8080/api/order/update-order-status", {id: orderId, delivery_status : updateStatus,payment_status: order.payment_status }, {withCredentials: true})
+    }catch(err){
+      console.log(err)
+    }finally{
+      fetchOrderDetails();
+      window.location.reload()
+      setOpen(false); 
+    }    
+  };
   useEffect(() => {
-    const fetchOrderDetails = async () => {
-      try {
-        const response = await axios.post("http://localhost:8080/api/order/get-order-details", {
-          id: orderId, // Gửi orderId trong body của request
-        });
-        setOrder(response.data.data); // Lưu dữ liệu trả về vào state
-        console.log(response.data.data);
-      } catch (error) {
-        console.error("Error fetching order details:", error);
-      }
-    };
-
     fetchOrderDetails(); // Gọi hàm fetch khi component mount
   }, [orderId]);
 
@@ -53,11 +96,31 @@ const OrderDetails = () => {
 
       {/* Order Status */}
       <div className="flex items-center gap-4 mb-6">
-        <Chip icon={<ShoppingCart />} label="Order Made" variant="outlined" />
-        <Chip icon={<Payment />} label="Order Paid" variant="outlined" />
-        <Chip icon={<LocalShipping />} label="Shipped" color="primary" />
-        <Chip icon={<CheckCircle />} label="Completed" variant="outlined" />
-      </div>
+  <Chip
+    icon={<ShoppingCart />}
+    label="Order Made"
+    variant={order.delivery_status === "OrderMade" ? "filled" : "outlined"}
+    color={order.delivery_status === "OrderMade" ? "primary" : "default"}
+  />
+  <Chip
+    icon={<Payment />}
+    label="Order Paid"
+    variant={order.delivery_status === "OrderPaid" ? "filled" : "outlined"}
+    color={order.delivery_status === "OrderPaid" ? "primary" : "default"}
+  />
+  <Chip
+    icon={<LocalShipping />}
+    label="Shipped"
+    variant={order.delivery_status === "Shipped" ? "filled" : "outlined"}
+    color={order.delivery_status === "Shipped" ? "primary" : "default"}
+  />
+  <Chip
+    icon={<CheckCircle />}
+    label="Completed"
+    variant={order.delivery_status === "Complete" ? "filled" : "outlined"}
+    color={order.delivery_status === "Complete" ? "primary" : "default"}
+  />
+</div>
 
       {/* Shipping Info */}
       <Card className="!p-4 !mb-4" style={{ backgroundColor: theme.palette.background.default }}>
@@ -153,14 +216,36 @@ const OrderDetails = () => {
 
         {/* Action Buttons */}
         <div className="mt-4 flex gap-4">
-          <Button variant="contained" color="primary" fullWidth>
-            Track Order
-          </Button>
-          <Button variant="outlined" color="secondary" fullWidth>
-            Contact Support
-          </Button>
+        {order.delivery_status !== "Complete" ? (
+           <Button variant="contained" color="primary" fullWidth onClick={handleNextStep}>
+           Track Order
+         </Button>
+        ):(<Button variant="contained" color="primary" fullWidth disabled>
+          Track Order
+        </Button>) } 
+        {order.delivery_status !== "Complete" ? (
+           <Button variant="outlined" color="secondary" fullWidth disabled>
+           Export PDF Invoice
+         </Button>
+        ):(<Button variant="outlined" color="secondary" fullWidth onClick={handleExportInvoice}>
+          Export PDF Invoice
+        </Button>) } 
         </div>
       </Card>
+      <Dialog open={open} onClose={() => setOpen(false)}>
+        <DialogTitle>Xác nhận chuyển trạng thái</DialogTitle>
+        <DialogContent>
+          Bạn có chắc muốn chuyển sang trạng thái không?
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpen(false)} color="secondary">
+            Cancel
+          </Button>
+          <Button onClick={handleConfirm} color="primary" variant="contained">
+            Yes
+          </Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 };
