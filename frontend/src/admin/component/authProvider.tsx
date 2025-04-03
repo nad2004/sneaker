@@ -1,12 +1,10 @@
 import { AuthProvider } from 'react-admin';
 import axios from 'axios';
-
+import Cookies from 'js-cookie';
 const authProvider: AuthProvider = {
     login: async ({ email, password }) => {
         try {
             const response = await axios.post('http://localhost:8080/api/user/login', { email, password }, { withCredentials: true });
-            localStorage.setItem('accessToken', response.data.data.accesstoken);
-            localStorage.setItem('refreshToken', response.data.data.refreshToken);
             return Promise.resolve();
         } catch (error) {
             return Promise.reject(new Error('Invalid credentials'));
@@ -16,12 +14,11 @@ const authProvider: AuthProvider = {
     checkError: () => Promise.resolve(),
 
     checkAuth: () => {
-        return localStorage.getItem('accessToken') ? Promise.resolve() : Promise.reject();
+        return Cookies.get('accessToken') ? Promise.resolve() : Promise.reject();
     },
 
     logout: () => {
-        localStorage.removeItem('accessToken');
-        localStorage.removeItem('refreshToken');
+        Cookies.remove('accessToken');
         return Promise.resolve();
     },
 

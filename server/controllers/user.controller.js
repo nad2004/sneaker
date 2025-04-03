@@ -174,9 +174,8 @@ export async function loginController(request,response){
             })
         }
 
-        const user = await UserModel.findOne({ email }).select('-address_details -forgot_password_expiry -forgot_password_otp -orderHistory -shopping_cart')
-
-        if(!user){
+        const user = await UserModel.findOne({ email }).select(' -forgot_password_expiry -forgot_password_otp -orderHistory -shopping_cart')
+        if(!user){  
             return response.status(400).json({
                 message : "User not register",
                 error : true,
@@ -204,7 +203,7 @@ export async function loginController(request,response){
 
         const accesstoken = await generatedAccessToken(user._id)
         const refreshToken = await genertedRefreshToken(user._id)
-
+        
         const updateUser = await UserModel.findByIdAndUpdate(user?._id,{
             last_login_date : new Date()
         })
@@ -222,8 +221,6 @@ export async function loginController(request,response){
             error : false,
             success : true,
             data : {
-                accesstoken,
-                refreshToken,
                 user
             }
         })
@@ -247,7 +244,7 @@ export async function logoutController(request,response){
             secure : true,
             sameSite : "None"
         }
-
+        console.log(userid)
         response.clearCookie("accessToken",cookiesOption)
         response.clearCookie("refreshToken",cookiesOption)
 

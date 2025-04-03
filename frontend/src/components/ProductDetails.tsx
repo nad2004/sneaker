@@ -3,6 +3,7 @@ import { FaShieldAlt, FaShoppingCart, FaWallet } from "react-icons/fa";
 import { useNavigate, useParams } from "react-router-dom"; // Import useParams để lấy params từ URL
 import ProductRelative from "./ProductRelative";
 import CommentSection from "./CommentSection";
+import axios from "axios";
 interface Product {
   _id: string;
   name: string;
@@ -27,17 +28,15 @@ const ProductDetails: React.FC = () => {
   const fetchProductDetails = async (id: any) => { // ✅ Nhận id làm tham số
     setLoading(true);
     try {
-      const response = await fetch('http://localhost:8080/api/product/get-product-details', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id }), // ✅ Truyền id vào body
+      const response = await axios.post('http://localhost:8080/api/product/get-product-details', {
+       id, // ✅ Truyền id vào body
       });
   
-      if (!response.ok) {
+      if (!response) {
         throw new Error('Không thể tải dữ liệu sản phẩm');
       }
   
-      const data = await response.json();
+      const data = await response.data;
       console.log("🔥 API trả về chi tiết sản phẩm:", data);
       if (data.success) {
         setProduct(data.data);
@@ -63,7 +62,6 @@ const ProductDetails: React.FC = () => {
 
   const handleAddToCart = async () => {
     if (!product) return;
-    console.log(localStorage.getItem("accessToken"))
     const user = localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user")!) : null;
    if(!user) {
     alert("Please login");
@@ -71,21 +69,18 @@ const ProductDetails: React.FC = () => {
    } 
 
     try {
-      const response = await fetch("http://localhost:8080/api/cart/create", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          authorization: `${localStorage.getItem("accessToken")}`, // Nếu có đăng nhập
-        },
-        body: JSON.stringify({
-          // Nếu có đăng nhập
+      const response = await axios.post(
+        "http://localhost:8080/api/cart/create",
+        {
           userId: user?._id,
           productId: product._id,
           quantity: quantity,
-          size: selectedSize
-        }),
-      });
-      const data = await response.json();
+          size: selectedSize,
+        },
+        { withCredentials: true } // ✅ Đặt ở đây
+      );
+      
+      const data = await response.data;
       if (data.success) {
         console.log("✅ Thêm vào giỏ hàng thành công!", data.cart);
         window.dispatchEvent(new Event("cartUpdated"));

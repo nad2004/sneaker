@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useSearchParams, Link } from "react-router-dom";
 import { Pagination } from "@mui/material"; // Import Pagination
 import LeftsideBar from "../../components/Layout/LeftsideBar";
+import axios from "axios";
 import ProductRate from "../../components/ProductRate";
 const SearchResults = ({ search }: { search: string }) => {
   const [products, setProducts] = useState<any[]>([]);
@@ -11,15 +12,13 @@ const SearchResults = ({ search }: { search: string }) => {
 
   const fetchProducts = async (pageNumber = 1, minPrice: any, maxPrice: any, search: any) => {
     try {
-      const response = await fetch("http://localhost:8080/api/product/get", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ page: pageNumber, limit: 12, search, minPrice, maxPrice }), // Fetch 12 products per page
-      });
+      const response = await axios.post("http://localhost:8080/api/product/get", {
+         page: pageNumber, limit: 12, search, minPrice, maxPrice   // Fetch 12 products per page
+      }, {withCredentials: true });
 
-      if (!response.ok) throw new Error("Lỗi khi gọi API");
+      if (!response) throw new Error("Lỗi khi gọi API");
 
-      const data = await response.json();
+      const data = await response.data;
       if (data.success) {
         const productsWithId = data.data.map((product: any) => ({
           ...product,

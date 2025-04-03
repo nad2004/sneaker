@@ -4,7 +4,7 @@ import iconGeimi from "./assets/gemini-color.svg"
 import { Link, useNavigate } from "react-router-dom";
 import { TextField, Autocomplete, CircularProgress } from "@mui/material";
 import axios from "axios";
-
+import Cookies from 'js-cookie';
 
 interface HeaderProps {
   search: string;
@@ -66,7 +66,7 @@ const ChatBox = ({ onClose }) => {
   );
 };
 const Header: React.FC<HeaderProps> = ({ search, setSearch }) => {
-  const [user, setUser] = useState<{ name: string; avatar: string; role: string | null } | null>(null);
+  const [user, setUser] = useState<{ id: string; name: string; avatar: string; role: string | null } | null>(null);
   const [productOptions, setProductOptions] = useState([]);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
@@ -78,10 +78,11 @@ const Header: React.FC<HeaderProps> = ({ search, setSearch }) => {
     const storedUser = storedUserString && storedUserString !== "undefined" ? JSON.parse(storedUserString) : null;
 
     if (storedUser) {
-      setUser({ name: storedUser.name, avatar: storedUser.avatar, role: storedUser.role});
+      setUser({ id: storedUser._id, name: storedUser.name, avatar: storedUser.avatar, role: storedUser.role});
     }
   }, [localStorage.getItem("user")]);
   const handleLogout = () => {
+    axios.get("http://localhost:8080/api/user/logout", { data: { userid: user?.id }, withCredentials: true })
     localStorage.removeItem("user");
     setUser(null);
     navigate("/login");
@@ -116,14 +117,8 @@ const Header: React.FC<HeaderProps> = ({ search, setSearch }) => {
   useEffect(() => {
     const updateCartCount = async () => {
       try {
-        const response = await fetch("http://localhost:8080/api/cart/get", {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            authorization: `${localStorage.getItem("accessToken")}`,
-          },
-        });
-        const data = await response.json();
+        const response = await axios.get("http://localhost:8080/api/cart/get", { withCredentials: true });
+        const data = await response.data
         console.log(data.data)
         setCartCount(data.data.length);
       } catch (error) {

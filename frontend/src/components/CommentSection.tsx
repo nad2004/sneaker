@@ -63,10 +63,7 @@ const CommentSection: React.FC<{ productId: any }> = ({ productId }) => {
         try {
             const token = localStorage.getItem("accessToken");
             const response = await axios.delete(`http://localhost:8080/api/review/delete`,
-                { 
-                headers: { Authorization: `Bearer ${token}` },
-                data: { reviewId, userId: user?._id }
-            });
+                { data: { reviewId, userId: user?._id }, withCredentials: true });
             alert("Comment deleted successfully!");
             handleMenuClose();
             window.location.reload();

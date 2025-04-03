@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
+import axios from "axios";
 const ForgotPasswordPage: React.FC = () => {
   const [email, setEmail] = useState("");
   const [error, setError] = useState("");
@@ -14,14 +15,10 @@ const ForgotPasswordPage: React.FC = () => {
     setMessage("");
     setLoading(true);
     try {
-      const response = await fetch("http://localhost:8080/api/user/forgot-password", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
-      });
+      const response = await axios.put("http://localhost:8080/api/user/forgot-password", {  email });
 
-      const data = await response.json();
-      if (!response.ok) {
+      const data = await response.data;
+      if (!response) {
         throw new Error(data.message || "Failed to send OTP");
       }
       setMessage("OTP sent to your email. Please check your inbox.");

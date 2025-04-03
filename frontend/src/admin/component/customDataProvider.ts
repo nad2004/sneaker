@@ -170,12 +170,9 @@ const customDataProvider: DataProvider = {
 
     create: async (resource, params) => {
         try {
-            const token = localStorage.getItem("accessToken");
             const response = await axios.post(`${apiUrl}/${resource}/create`, 
                 { ...params.data, image: [] },
-                {
-                    headers: { authorization: `${token}` } // Headers phải là tham số thứ 3
-                }
+                { withCredentials: true }
             );
             return { data: { ...response.data, id: response.data._id || response.data.id } };
         } catch (error) {
@@ -189,13 +186,10 @@ const customDataProvider: DataProvider = {
 
     update: async (resource, params) => {
         try {
-            const token = localStorage.getItem("accessToken");
             const response = await axios.put(
                 `${apiUrl}/${resource}/update-${resource}-details`, 
                 { _id: params.id, ...params.data },
-                {
-                    headers: { authorization: `${token}` } // Headers phải là tham số thứ 3
-                }
+                { withCredentials: true }
             );
             const updated = await axios.post(`${apiUrl}/${resource}/get-${resource}-details`, { id: params.id });
             return { data: { ...updated.data.data, id: updated.data.data._id || response.data.id } };
@@ -210,14 +204,10 @@ const customDataProvider: DataProvider = {
 
     delete: async (resource, params) => {
         try {
-            const token = localStorage.getItem("accessToken");
-    
             const response = await axios.put(
                 `${apiUrl}/${resource}/delete`,
                 { _id: params.id },  // Body
-                {
-                    headers: { authorization: `${token}` } // Headers phải là tham số thứ 3
-                }
+                { withCredentials: true }
             );
             return { data: { id: params.id } };
         } catch (error) {

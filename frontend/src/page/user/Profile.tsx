@@ -42,7 +42,7 @@ const Profile = () => {
     setUserName(user?.name || ""); 
     setUserEmail(user?.email || ""); 
     setPhoneNumber(user?.mobile || ""); 
-    setAddress(user?.address || ""); 
+    setAddress(user?.address_details || ""); 
   }, []);
   const handleOpenVerifyOtp = async () => {
     setError(null);
@@ -94,10 +94,7 @@ const Profile = () => {
         formData.append("userId", user?._id || "");
 
         const response = await axios.put("http://localhost:8080/api/user/upload-avatar", formData, {
-            headers: {
-                "Content-Type": "multipart/form-data",
-                authorization: `${localStorage.getItem("accessToken")}`,
-            },
+           withCredentials: true 
         });
         
         if (response.data.success) {

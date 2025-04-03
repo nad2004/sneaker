@@ -1,4 +1,5 @@
 import React from "react";
+import axios from "axios";
 import {useNavigate} from "react-router-dom";
 import { Swiper, SwiperSlide } from "swiper/react";
 import SpotlightCard from './SpotlightCard';
@@ -153,17 +154,15 @@ const HomePage = () => {
       };
       const fetchProducts = async () => {
         try {
-          const response = await fetch("http://localhost:8080/api/product/get", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ limit: 50 }), // Thay đổi limit để lấy 12 sản phẩm mỗi lần
-          });
+          const response = await axios.post("http://localhost:8080/api/product/get", {
+            limit: 50 
+          }, {withCredentials: true });
       
-          if (!response.ok) {
+          if (!response.data) {
             throw new Error("Lỗi khi gọi API");
           }
       
-          const data = await response.json();
+          const data = await response.data;
           if (data.success) {
             // Map lại để chuyển đổi _id thành id
             const productsWithId = data.data.map((product: any) => ({

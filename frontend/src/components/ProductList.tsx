@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";  // Import useNavigate
 import { FaShoppingCart} from "react-icons/fa";
 import LeftsideBar from "./Layout/LeftsideBar";
 import ProductRate from "./ProductRate";
+import axios from "axios";
 interface Product {
   id: string;
   name: string;
@@ -24,16 +25,14 @@ const ProductList: React.FC<ProductListProps> = ({ search, setSearch }) => {
   const navigate = useNavigate();  // Khởi tạo navigate 
   const fetchProducts = async () => {
     try {
-      const response = await fetch("http://localhost:8080/api/product/get", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ page, limit: 12 }), // Thay đổi limit để lấy 12 sản phẩm mỗi lần
-      });
+      const response = await axios.post("http://localhost:8080/api/product/get", {
+         page, limit: 12 // Thay đổi limit để lấy 12 sản phẩm mỗi lần
+      }, {withCredentials: true });
   
       if (!response.ok) {
         throw new Error("Lỗi khi gọi API");
       } 
-      const data = await response.json();
+      const data = response.data;
       if (data.success) {
         // Map lại để chuyển đổi _id thành id
         const productsWithId = data.data.map((product: any) => ({

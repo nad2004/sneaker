@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-
+import axios from "axios";
 
 interface OrderData{
   products: {
@@ -60,12 +60,8 @@ const CheckOutList: React.FC = () => {
   // Fetch product details
   const fetchProductDetails = async (productId: string) => {
     try {
-      const response = await fetch('http://localhost:8080/api/product/get-product-details', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({id: productId }),
-      });
-      const data = await response.json();
+      const response = await axios.post('http://localhost:8080/api/product/get-product-details', {id: productId }, {withCredentials: true });
+      const data = await response.data;
       if (data.success) {
         console.log('Chi tiết sản phẩm:', data.data);
         return data.data;
@@ -118,7 +114,7 @@ const CheckOutList: React.FC = () => {
         const parsedUser = JSON.parse(user); // Parse chuỗi thành object
         userData = {
           id: parsedUser._id || "",
-          address: parsedUser.address || "",
+          address: parsedUser.address_details || "",
           name: parsedUser.name || "",
           email: parsedUser.email || "",
           mobile: parsedUser.mobile || "",
@@ -169,16 +165,11 @@ const CheckOutList: React.FC = () => {
   const payment_method = form.paymentMethod;
   const delivery_address = form.address;
     try {
-      const response = await fetch("http://localhost:8080/api/order/create", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          authorization: `${localStorage.getItem("accessToken")}`,
-        },
-        body: JSON.stringify({ userId, products, totalAmt, payment_method, delivery_address }), // Truyền userId từ localStorage
-      });
+      const response = await axios.post("http://localhost:8080/api/order/create", {
+        userId, products, totalAmt, payment_method, delivery_address  // Truyền userId từ localStorage
+      }, {withCredentials: true });
   
-      const data = await response.json();
+      const data = await response.data;
       if (data.success) {
         alert("Đặt hàng thành công!");
         window.dispatchEvent(new Event("cartUpdated"));

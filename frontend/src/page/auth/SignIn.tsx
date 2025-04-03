@@ -16,9 +16,6 @@ const handleLogin = async (event: React.FormEvent) => {
           { email, password }, 
           { withCredentials: true }
       );
-
-      localStorage.setItem('accessToken', response.data.data.accesstoken);
-      localStorage.setItem('refreshToken', response.data.data.refreshToken);
       localStorage.setItem('user', JSON.stringify(response.data.data.user));
       setError(null);
       alert('Login successful');

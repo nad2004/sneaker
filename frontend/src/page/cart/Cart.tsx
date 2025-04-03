@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-
+import axios from "axios";
 interface CartItem {
   _id: string;
   productId: {
@@ -22,15 +22,10 @@ const Cart: React.FC = () => {
   // ✅ Lấy danh sách giỏ hàng từ API
   const fetchCart = async () => {
     try {
-      const response = await fetch("http://localhost:8080/api/cart/get", {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          authorization: `${localStorage.getItem("accessToken")}`,
-        },
-      });
+      const response = await axios.get("http://localhost:8080/api/cart/get", 
+        { withCredentials: true });
 
-      const data = await response.json();
+      const data = await response.data;
       console.log("🔥 API trả về giỏ hàng:", data);
 
       if (data.success) {
@@ -56,18 +51,12 @@ const Cart: React.FC = () => {
     if (newQuantity < 1) return;
 
     try {
-      const response = await fetch("http://localhost:8080/api/cart/update-qty", {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          authorization: `${localStorage.getItem("accessToken")}`,
-        },
-        body: JSON.stringify({ _id: itemId, qty: newQuantity }),
-      });
+      const response = await axios.put("http://localhost:8080/api/cart/update-qty", {
+    _id: itemId, qty: newQuantity }, { withCredentials: true });
 
-      const data = await response.json();
+      const data = await response.data;
 
-      if (!response.ok) throw new Error(data.message || "Cập nhật thất bại");
+      if (!response) throw new Error(data.message || "Cập nhật thất bại");
 
       // 🔄 Sau khi cập nhật, gọi lại API để lấy dữ liệu mới nhất
       await fetchCart();
@@ -80,16 +69,14 @@ const Cart: React.FC = () => {
   // 🗑️ Xóa sản phẩm khỏi giỏ hàng
   const removeFromCart = async (itemId: string) => {
     try {
-      const response = await fetch("http://localhost:8080/api/cart/delete-cart-item", {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-          authorization: `${localStorage.getItem("accessToken")}`,
-        },
-        body: JSON.stringify({ _id: itemId }),
+      const response = await axios({
+        method: 'delete',
+        url: "http://localhost:8080/api/cart/delete-cart-item",
+        data: { _id: itemId },  // Truyền dữ liệu vào body ở đây
+        withCredentials: true
       });
-
-      if (!response.ok) throw new Error("Xóa sản phẩm thất bại");
+      
+      if (!response) throw new Error("Xóa sản phẩm thất bại");
 
       // 🔄 Sau khi xóa, gọi lại API để lấy dữ liệu mới nhất
       window.dispatchEvent(new Event("cartUpdated"));

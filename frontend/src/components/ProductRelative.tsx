@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import ProductRate from "./ProductRate";
+import axios from "axios";
 interface Product {
   _id: string;  // Đổi từ id -> _id
   name: string;
@@ -19,17 +20,14 @@ const ProductRelative: React.FC<{ currentProductId: string }> = ({ currentProduc
 
     const fetchProducts = async () => {
       try {
-        const response = await fetch("http://localhost:8080/api/product/get", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          
+        const response = await axios.post("http://localhost:8080/api/product/get", {
         });
       
-        if (!response.ok) {
+        if (!response) {
           throw new Error('Không thể tải danh sách sản phẩm');
         }
 
-        const data = await response.json();
+        const data = await response.data;
         if (data.success) {
           // Loại bỏ sản phẩm hiện tại khỏi danh sách
           const filteredProducts = data.data.filter((product: Product) => product._id !== currentProductId);

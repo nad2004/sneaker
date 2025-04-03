@@ -65,13 +65,7 @@ const OrderPage = () => {
     try {
       const response = await axios.post(
         "http://localhost:8080/api/order/order-list",
-        { userId },
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-            "Content-Type": "application/json",
-          },
-        }
+        { userId }, {withCredentials: true }
       );
       setOrders(response.data.data);
     } catch (error) {
