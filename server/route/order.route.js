@@ -12,5 +12,5 @@ orderRouter.get("/export-excel",exportExcelOrder)
 orderRouter.post("/export-invoice",generateInvoicePDF)
 orderRouter.delete("/delete",auth,deleteOrderDetails)
 orderRouter.put('/update-order-details',auth,updateOrderDetails)
-orderRouter.put('/update-order-status',auth,updateOrderStatus)
+orderRouter.put('/update-order-status',auth, updateOrderStatus) 
 export default orderRouter

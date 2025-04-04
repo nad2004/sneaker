@@ -19,7 +19,6 @@ const OrderDetails = () => {
         id: orderId, // Gửi orderId trong body của request
       });
       setOrder(response.data.data); // Lưu dữ liệu trả về vào state
-      console.log(response.data.data);
     } catch (error) {
       console.error("Error fetching order details:", error);
     }
@@ -48,17 +47,19 @@ const OrderDetails = () => {
   };
   const handleConfirm = () => {
     let updateStatus;
+    let updatePaymentStatus = order.payment_status;
     if(order.delivery_status === "OrderMade"){
       updateStatus = "OrderPaid";
     }
     if(order.delivery_status === "OrderPaid"){
       updateStatus = "Shipped";
+      updatePaymentStatus = "Success";
     }
     if(order.delivery_status === "Shipped"){
       updateStatus = "Complete";
     }
     try{
-      const response = axios.put("http://localhost:8080/api/order/update-order-status", {id: orderId, delivery_status : updateStatus,payment_status: order.payment_status }, {withCredentials: true})
+      const response = axios.put("http://localhost:8080/api/order/update-order-status", {id: orderId, delivery_status : updateStatus,payment_status: updatePaymentStatus }, {withCredentials: true})
     }catch(err){
       console.log(err)
     }finally{
@@ -95,7 +96,7 @@ const OrderDetails = () => {
       </Typography>
 
       {/* Order Status */}
-      <div className="flex items-center gap-4 mb-6">
+  <div className="flex items-center gap-4 mb-6">
   <Chip
     icon={<ShoppingCart />}
     label="Order Made"

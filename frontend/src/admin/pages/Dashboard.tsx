@@ -33,7 +33,14 @@ const Dashboard = () => {
       
       setCustomerCount(Userresponse.data.data.filter(user => user.role === "CUSTOMER").length);
       // Tính toán Total Earning
-      const totalEarning = orderData.reduce((sum, order) => sum + (order.totalAmt || 0), 0);
+      
+      const totalEarning = orderData.reduce((sum: number, order: any) => {
+        if (order.delivery_status === "Complete") {
+          return sum + (order.totalAmt || 0);
+        }
+        return sum; // Quan trọng! Giữ nguyên tổng nếu điều kiện không đúng
+      }, 0);
+      console.log(totalEarning);
       setTotalEarning(totalEarning);
 
       // Xử lý dữ liệu biểu đồ: Nhóm theo ngày hoặc tháng

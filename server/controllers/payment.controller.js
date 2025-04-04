@@ -139,8 +139,8 @@ export  async function createQRCode(req, res) {
          });
     }
 }
-const vnp_TmnCode = "SJK2WQVN"; // Thay bằng mã Merchant của bạn
-const vnp_HashSecret = "5U9XU89TRA6PW70TVNU2F155G4AWB3AU"; // Thay bằng secret key của bạn
+const vnp_TmnCode = process.env.vnp_TmnCode; // Thay bằng mã Merchant của bạn
+const vnp_HashSecret = process.env.vnp_HashSecret; // Thay bằng secret key của bạn
 const vnp_Url = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
 const vnp_ReturnUrl = "http://localhost:5173/payment-return";
 export async function generateQRVNPay(req, res){
