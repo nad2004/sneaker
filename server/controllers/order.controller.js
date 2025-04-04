@@ -24,14 +24,17 @@ export async function createNewOrderController(request, response) {
                 success: false,
             });
         }
-
+        let payment_status =  "Pending";
+        if (payment_method === "USING DEBIT CARD") {
+            payment_status = "Success"
+        }
         // Tạo payload cho order
         const orderPayload = {
             userId,
             orderId: `ORD-${new Date().getTime()}`, // Tạo orderId dựa trên timestamp để đảm bảo duy nhất
             products,
             payment_method: payment_method,
-            payment_status: "Pending",
+            payment_status: payment_status,
             delivery_status: "OrderMade",
             delivery_address: delivery_address || "",
             subTotalAmt: totalAmt,
@@ -231,10 +234,7 @@ export const deleteOrderDetails = async (request, response) => {
         }
 
         // Xóa đơn hàng
-        const deleteOrder = await ProductModel.updateOne(
-            { _id: _id },  // Điều kiện tìm sản phẩm
-            { $set: { publish: false } } // Chỉ cập nhật trường `publish`
-        ).session(session);
+        const deleteOrder = await OrderModel.deleteOne({ _id }).session(session);
 
         // Commit transaction
         await session.commitTransaction();

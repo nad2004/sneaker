@@ -10,7 +10,7 @@ orderRouter.post("/get",getOrderController)
 orderRouter.get("/get-order-list",getOrderListController)
 orderRouter.get("/export-excel",exportExcelOrder)
 orderRouter.post("/export-invoice",generateInvoicePDF)
-orderRouter.put("/delete",auth,deleteOrderDetails)
+orderRouter.delete("/delete",auth,deleteOrderDetails)
 orderRouter.put('/update-order-details',auth,updateOrderDetails)
 orderRouter.put('/update-order-status',auth,updateOrderStatus)
 export default orderRouter

@@ -21,8 +21,9 @@ const Cart: React.FC = () => {
   const navigate = useNavigate();
   // ✅ Lấy danh sách giỏ hàng từ API
   const fetchCart = async () => {
+    const userId = JSON.parse(localStorage.getItem("user") || "" )?._id;
     try {
-      const response = await axios.get("http://localhost:8080/api/cart/get", 
+      const response = await axios.post("http://localhost:8080/api/cart/get", {userId}, 
         { withCredentials: true });
 
       const data = await response.data;
@@ -72,7 +73,7 @@ const Cart: React.FC = () => {
       const response = await axios({
         method: 'delete',
         url: "http://localhost:8080/api/cart/delete-cart-item",
-        data: { _id: itemId },  // Truyền dữ liệu vào body ở đây
+        data: { _id: itemId, userId: JSON.parse(localStorage.getItem("user") || "")._id },  // Truyền dữ liệu vào body ở đây
         withCredentials: true
       });
       

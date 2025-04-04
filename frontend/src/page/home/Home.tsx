@@ -191,7 +191,7 @@ const HomePage = () => {
       {/* Slider Section */}
       <motion.div initial="hidden" whileInView="visible" variants={fadeInVariant} className="bg-gray-100 min-h-40 flex flex-col items-center">
       {/* Slider Section */}
-      <motion.div initial="hidden" whileInView="visible" variants={fadeInVariant} className="w-[70%] relative rounded-lg overflow-hidden">
+      <motion.div initial="hidden" whileInView="visible" variants={fadeInVariant} className=" w-full md:w-[70%] relative rounded-lg overflow-hidden">
         <Swiper className="h-96">
           <SwiperSlide className="relative">
             <img src={KobeShoe} alt="Nike Kobe X 10" className="w-full h-96 object-cover" />
@@ -205,16 +205,16 @@ const HomePage = () => {
 
       {/* Features Section */}
       
-      <motion.div initial="hidden" whileInView="visible" variants={fadeInVariant} className="grid grid-cols-4 gap-6 px-8 py-6">
+      <motion.div initial="hidden" whileInView="visible" variants={fadeInVariant} className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 px-4 sm:px-8 py-4 sm:py-6">
       {features.map((feature, idx) => (
-        <motion.div initial="hidden" whileInView="visible" variants={fadeInVariant} key={idx} className="flex items-center space-x-4">
+        <motion.div initial="hidden" whileInView="visible" variants={fadeInVariant} key={idx} className="flex items-center space-x-4 p-2">
           {/* Hình ảnh bên trái */}
-          <img src={feature.img} alt={feature.title} className="h-12 w-12" />
+          <img src={feature.img} alt={feature.title} className="h-8 sm:h-12 w-8 sm:w-12" />
           
           {/* Nội dung bên phải */}
           <motion.div initial="hidden" whileInView="visible" variants={fadeInVariant}>
-            <h3 className="font-semibold text-base">{feature.title}</h3>
-            <p className="text-gray-500 text-sm">
+            <h3 className="font-semibold text-sm sm:text-base">{feature.title}</h3>
+            <p className="text-gray-500 text-xs sm:text-sm">
               {feature.description}
             </p>
           </motion.div>
@@ -223,14 +223,14 @@ const HomePage = () => {
     </motion.div>
     
       {/* Product Section */}
-      <motion.div initial="hidden" whileInView="visible" variants={fadeInVariant} className="grid grid-cols-3 gap-6 px-8 pb-8">
+      <motion.div initial="hidden" whileInView="visible" variants={fadeInVariant} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 px-4 sm:px-8 pb-6 sm:pb-8">
         {productsSection.map((product) => (
             
             <motion.div initial="hidden" whileInView="visible" variants={fadeInVariant} key={product.id}  className=" relative rounded-lg shadow-lg overflow-hidden">
             <img
               src={product.image}
               alt={product.name}
-              className="w-full h-64 object-cover "
+              className="w-full h-48 sm:h-64 object-cover"
             />
             <motion.div initial="hidden" whileInView="visible" variants={fadeInVariant} className="absolute bottom-0 bg-gradient-to-t from-black to-transparent p-4 w-full">
               <h3 className="text-white font-bold text-lg">{product.name}</h3>
@@ -263,7 +263,7 @@ const HomePage = () => {
             View All →
         </Button>
     </motion.div>
-      <motion.div initial="hidden" whileInView="visible" variants={fadeInVariant} className="grid grid-cols-6 gap-4">
+      <motion.div initial="hidden" whileInView="visible" variants={fadeInVariant} className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2 sm:gap-4">
         {[...products]
               .sort(() => Math.random() - 0.5) // Trộn mảng ngẫu nhiên
               .slice(0, 6) // Lấy 4 sản phẩm đầu tiên
@@ -273,15 +273,14 @@ const HomePage = () => {
       </motion.div>
     </motion.div>
   <SpotlightCard className="custom-spotlight-card mt-4" spotlightColor="rgba(0, 229, 255, 0.2)">
-  <motion.div initial="hidden" whileInView="visible" variants={fadeInVariant} className="grid grid-cols-4 gap-12">
+  <motion.div initial="hidden" whileInView="visible" variants={fadeInVariant} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-12">
   {[...products]
-              .sort(() => Math.random() - 0.5) // Trộn mảng ngẫu nhiên
-              .slice(0, 4) // Lấy 4 sản phẩm đầu tiên
+              .slice(4, 8) // Lấy 4 sản phẩm đầu tiên
               .map((product, index) => (
     <Card key={index} className="relative shadow-md rounded-lg overflow-hidden ">
       {/* Hình ảnh sản phẩm */}
       <motion.div initial="hidden" whileInView="visible" variants={fadeInVariant}
-        className="h-[500px] bg-no-repeat bg-bottom bg-contain bg-blend-multiply !bg-gray-200"
+        className="h-[300px] sm:h-[400px] lg:h-[500px] !bg-no-repeat !bg-bottom !bg-contain !bg-blend-multiply !bg-gray-400"
         style={{ backgroundImage: `url(${product.image[0]})` }}
       ></motion.div>
 
@@ -296,7 +295,7 @@ const HomePage = () => {
           <Typography className="!text-black !font-bold !text-lg !mt-1 !line-clamp-2">
             {product.name}
           </Typography>
-          <Typography className="!text-gray-700 !text-sm !mt-1">
+          <Typography className="!text-gray-700 !text-sm !mt-1 line-clamp-1">
             {product.description || "Limited-time offer on our best products!"}
           </Typography>
           <Button
@@ -332,87 +331,109 @@ const HomePage = () => {
             View All →
         </Button>
 </motion.div>
-<motion.div initial="hidden" whileInView="visible" variants={fadeInVariant} className="grid grid-cols-3 gap-6">
+<motion.div
+  initial="hidden"
+  whileInView="visible"
+  variants={fadeInVariant}
+  className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6"
+>
   {/* Hàng 1: 3 sản phẩm đầu tiên */}
   {[...products]
-              .sort(() => Math.random() - 0.5) // Trộn mảng ngẫu nhiên
-              .slice(0, 3) // Lấy 3 sản phẩm đầu tiên
-              .map((product, index) => (
-    <Card key={index} className="relative shadow-md rounded-lg overflow-hidden p-4 h-72" >
-      <motion.div initial="hidden" whileInView="visible" variants={fadeInVariant} className="flex items-center h-full">
-        {/* Hình ảnh sản phẩm */}
-        <motion.div initial="hidden" whileInView="visible" variants={fadeInVariant} className="w-1/3 flex justify-center">
-          <img src={product.image[0]} alt={product.name} className=" !object-fill" />
-        </motion.div>
-        
-        {/* Nội dung sản phẩm */}
-        <motion.div initial="hidden" whileInView="visible" variants={fadeInVariant} className="w-2/3 pl-4">
-          {/* Icon yêu thích */}
-          <motion.div initial="hidden" whileInView="visible" variants={fadeInVariant} className="flex justify-between">
-            <Typography className="text-sm !font-semibold">{product.name}</Typography>
-          </motion.div>
-          <ProductRate productId = {product.id} />
-          {/* Giá sản phẩm */}
-          <Typography className="text-red-500  !font-bold">${product.price.toLocaleString()}</Typography>
+    .sort(() => Math.random() - 0.5)
+    .slice(0, 3)
+    .map((product, index) => (
+      <Card
+        key={index}
+        className="relative shadow-md rounded-lg overflow-hidden p-2 sm:p-4 h-auto sm:h-72"
+      >
+        <motion.div
+          initial="hidden"
+          whileInView="visible"
+          variants={fadeInVariant}
+          className="flex flex-col sm:flex-row items-center h-full"
+        >
+          <div className="w-full sm:w-1/3 flex justify-center p-2">
+            <img
+              src={product.image[0]}
+              alt={product.name}
+              className="w-32 sm:w-auto object-cover"
+            />
+          </div>
 
-          {/* Nút thêm vào giỏ hàng */}
-          <Button
-            onClick={() => {handleProductClick(product.id)}}
-            variant="outlined"
-            color="neutral"
-            className="!w-full !normal-case !rounded-full !mt-2 !px-4 !py-2 !hover:bg-purple-50"
-    >
-        Add to cart
-    </Button>
+          <div className="w-full sm:w-2/3 pl-4">
+            <div className="flex justify-between">
+              <Typography className="text-sm !font-semibold">
+                {product.name}
+              </Typography>
+            </div>
+            <ProductRate productId={product.id} />
+            <Typography className="text-red-500 !font-bold">
+              ${product.price.toLocaleString()}
+            </Typography>
+            <Button
+              onClick={() => handleProductClick(product.id)}
+              variant="outlined"
+              color="neutral"
+              className="!w-full !normal-case !rounded-full !mt-2 !px-4 !py-2 !hover:bg-purple-50"
+            >
+              Add to cart
+            </Button>
+          </div>
         </motion.div>
-      </motion.div>
-    </Card>
-  ))}
+      </Card>
+    ))}
 
   {/* Hàng 2: 2 sản phẩm tiếp theo */}
   {[...products]
-              .sort(() => Math.random() - 0.5) // Trộn mảng ngẫu nhiên
-              .slice(0, 2) // Lấy 2 sản phẩm đầu tiên
-              .map((product, index) => (
-    <Card
-      key={index + 3} /* Đảm bảo key duy nhất */
-      className={`relative shadow-md rounded-lg overflow-hidden p-4 h-72 ${
-        index === 1 ? "col-start-3" : "" /* Đưa sản phẩm cuối vào giữa */
-      }`}
-    >
-      <motion.div initial="hidden" whileInView="visible" variants={fadeInVariant} className="flex items-center h-full">
-        {/* Hình ảnh sản phẩm */}
-        <motion.div initial="hidden" whileInView="visible" variants={fadeInVariant} className="w-1/3 flex justify-center">
-          <img src={product.image[0]} alt={product.name} className=" !object-fill" />
+    .sort(() => Math.random() - 0.5)
+    .slice(0, 2)
+    .map((product, index) => (
+      <Card
+        key={index + 3}
+        className={`relative shadow-md rounded-lg overflow-hidden p-4 h-auto sm:h-72 col-span-1 ${
+          index === 1 ? "md:col-start-3" : ""
+        }`}
+      >
+        <motion.div
+          initial="hidden"
+          whileInView="visible"
+          variants={fadeInVariant}
+          className="flex flex-col sm:flex-row items-center h-full"
+        >
+          <div className="w-full sm:w-1/3 flex justify-center">
+            <img
+              src={product.image[0]}
+              alt={product.name}
+              className="object-cover w-32 sm:w-auto"
+            />
+          </div>
+          <div className="w-full sm:w-2/3 pl-4">
+            <div className="flex justify-between">
+              <Typography className="text-sm !font-semibold">
+                {product.name}
+              </Typography>
+            </div>
+            <ProductRate productId={product.id} />
+            <Typography className="text-red-500 !font-bold">
+              ${product.price.toLocaleString()}
+            </Typography>
+            <Button
+              onClick={() => handleProductClick(product.id)}
+              variant="outlined"
+              color="neutral"
+              className="!w-full !normal-case !rounded-full !mt-2 !px-4 !py-2 !hover:bg-purple-50"
+            >
+              Add to cart
+            </Button>
+          </div>
         </motion.div>
-
-        {/* Nội dung sản phẩm */}
-        <motion.div initial="hidden" whileInView="visible" variants={fadeInVariant} className="w-2/3 pl-4 ">
-          {/* Icon yêu thích */}
-          <motion.div initial="hidden" whileInView="visible" variants={fadeInVariant} className="flex justify-between">
-            <Typography className="text-sm !font-semibold">{product.name}</Typography>
-          </motion.div>
-          <ProductRate productId = {product.id} />
-          {/* Giá sản phẩm */}
-          <Typography className="text-red-500 !font-bold">${product.price.toLocaleString()}</Typography>
-
-          {/* Nút thêm vào giỏ hàng */}
-          <Button
-            onClick={() => {handleProductClick(product.id)}}
-            variant="outlined"
-            color="neutral"
-            className="!w-full !normal-case !rounded-full !mt-2 !px-4 !py-2 !hover:bg-purple-50 "
-    >
-        Add to cart
-    </Button>
-        </motion.div>
-      </motion.div>
-    </Card>
-  ))}
+      </Card>
+    ))}
 </motion.div>
-<motion.div initial="hidden" whileInView="visible" variants={fadeInVariant} className="grid grid-cols-2 gap-4 px-6 mt-8">
+
+<motion.div initial="hidden" whileInView="visible" variants={fadeInVariant} className="grid grid-cols-1 md:grid-cols-2 gap-4 px-4 sm:px-6 mt-6 sm:mt-8">
   {banners.map((banner, index) => (
-    <motion.div initial="hidden" whileInView="visible" variants={fadeInVariant} key={index} className="relative rounded-lg overflow-hidden group h-[400px]">
+    <motion.div initial="hidden" whileInView="visible" variants={fadeInVariant} key={index} className="relative rounded-lg overflow-hidden group h-[300px] sm:h-[400px]">
       {/* Ảnh nền */}
       <img src={banner.image} alt="Banner" className="w-full h-full object-cover" />
 
@@ -464,7 +485,7 @@ const HomePage = () => {
         </Button>
 </motion.div>
 
- <motion.div initial="hidden" whileInView="visible" variants={fadeInVariant} className="grid grid-cols-3 gap-4 px-6 mt-8">
+ <motion.div initial="hidden" whileInView="visible" variants={fadeInVariant} className="grid grid-cols-1 lg:grid-cols-3 gap-4 px-4 sm:px-6 mt-6 sm:mt-8">
             {/* Cột trái */}
             <motion.div initial="hidden" whileInView="visible" variants={fadeInVariant} className="grid grid-cols-2 gap-4">
                 {[...products]

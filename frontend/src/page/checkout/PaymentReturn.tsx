@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-
+import axios from "axios";
 const VnpayReturn: React.FC = () => {
   const [searchParams] = useSearchParams();
   const [status, setStatus] = useState<"success" | "failed" | null>(null);
@@ -18,7 +18,8 @@ const VnpayReturn: React.FC = () => {
       setStatus("success"); // Thanh toán thành công
     } else {
       setStatus("failed");
-      setErrorCode(responseCode); // Lưu mã lỗi nếu có
+      setErrorCode(responseCode);
+      alert("Thanh toán không thành công đơn hàng bị huỷ") // Lưu mã lỗi nếu có
     }
   }, [searchParams]);
 

@@ -54,7 +54,7 @@ const OrderPage = () => {
           try {
               console.log(review);
               await axios.post("http://localhost:8080/api/review/create", review);
-              
+              alert("Đánh giá thành công!");
               window.location.reload();
           } catch (error) {
               console.error("Failed to add review:", error);

@@ -5,7 +5,7 @@ import axios from 'axios';
 const LeftsideBar = () => {
   const [priceRange, setPriceRange] = useState<number[]>([0, 10000000]);
   const [selectedBrand, setSelectedBrand] = useState<string>('');
-  const [categorys, setCategorys] = useState<string[]>([]);
+  const [categorys, setCategorys] = useState<{ name: string; id: string }[]>([]);
   const navigate = useNavigate();
   const fetchCategorys = async () => {
     try {
@@ -48,32 +48,34 @@ const LeftsideBar = () => {
   };
 
   return (
-    <Box className="container mx-auto p-4 mb-2" sx={{ backgroundColor: '#f9f9f9', padding: 3, borderRadius: 2 }}>
-      <Typography variant="h6" fontWeight="bold" gutterBottom>
+    <Box className="!container !mx-auto !p-4 !bg-gray-100 !rounded-lg !shadow-md">
+      {/* Tiêu đề */}
+      <Typography variant="h6" className="!font-semibold !mb-4">
         Widget price filter
       </Typography>
 
       {/* Bộ lọc giá */}
-      <Box display="flex" alignItems="center" gap={2} sx={{ mb: 2 }}>
+      <Box className="!flex !flex-col !sm:flex-row !items-center !gap-3 !mb-4">
         <TextField
           label="Min price"
           variant="outlined"
           size="small"
           value={priceRange[0]}
           onChange={(e) => setPriceRange([+e.target.value, priceRange[1]])}
-          sx={{ width: 100 }}
+          className="!w-full !sm:w-32"
         />
-        <Typography variant="body2">-</Typography>
+        <span>-</span>
         <TextField
           label="Max price"
           variant="outlined"
           size="small"
           value={priceRange[1]}
           onChange={(e) => setPriceRange([priceRange[0], +e.target.value])}
-          sx={{ width: 100 }}
+          className="!w-full !sm:w-32"
         />
       </Box>
 
+      {/* Slider */}
       <Slider
         value={priceRange}
         onChange={handleSliderChange}
@@ -82,28 +84,39 @@ const LeftsideBar = () => {
         max={10000000}
         step={1000}
         color="secondary"
+        className="!text-purple-600"
       />
 
-      <Typography variant="body2" sx={{ mt: 2, mb: 2 }}>
+      {/* Hiển thị khoảng giá */}
+      <Typography className="!text-sm !text-gray-700 !mt-3">
         Price: ${priceRange[0]} — ${priceRange[1]}
       </Typography>
 
-      <Button variant="contained" color="secondary" fullWidth onClick={handleFilter}>
+      {/* Nút Filter */}
+      <Button
+        variant="contained"
+        color="secondary"
+        fullWidth
+        onClick={handleFilter}
+        className="!bg-purple-600 !hover:bg-purple-700 !text-white !mt-3"
+      >
         Filter
       </Button>
 
       {/* Danh mục sản phẩm */}
-      <FormControl sx={{ mt: 4 }}>
-        <FormLabel>Product Categories</FormLabel>
+      <FormControl className="!mt-6">
+        <FormLabel className="!font-medium">Product Categories</FormLabel>
         <RadioGroup value={selectedBrand} onChange={handleBrandChange}>
-          {categorys.map((brand:any) => (
-            <FormControlLabel key={brand.id} value={brand.id} control={<Radio />} label={brand.name} />
+          {categorys.map((brand) => (
+            <FormControlLabel
+              key={brand.id}
+              value={brand.id}
+              control={<Radio className="text-purple-600" />}
+              label={brand.name}
+            />
           ))}
         </RadioGroup>
       </FormControl>
-
-      
-     
     </Box>
   );
 };

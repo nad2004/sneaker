@@ -1,5 +1,4 @@
 import { StrictMode } from 'react';
-import CreatePayment from './page/checkout/CreatePayment.tsx';
 import VnpayReturn from './page/checkout/PaymentReturn.tsx';
 import { Admin, Resource, CustomRoutes } from 'react-admin';
 import authProvider from './admin/component/authProvider.tsx'; 
@@ -42,12 +41,11 @@ import VerifyOtpLossPW from './page/auth/VerifyOtpLossPW.tsx';
             <Route path="/user-order" element={<Order />} />
             <Route path="/login" element={<SignInPage />} />
             <Route path="/signup" element={<SignUpPage />} />
+            <Route path="/payment-return" element={<VnpayReturn />} />
           </Route>
 
           {/* Các route authentication */}
           <Route path="/verify-otp/:userId" element={<VerifyOtp />} />
-          <Route path="/payment-qr" element={<CreatePayment />} />
-          <Route path="/payment-return" element={<VnpayReturn />} />
           <Route path="/forgot-password" element={<ForgotPasswordPage />} />
           <Route path="/reset-password" element={<ResetPasswordPage />} />
           <Route path="/verify-otppw" element={<VerifyOtpLossPW />} />
@@ -81,7 +79,6 @@ import VerifyOtpLossPW from './page/auth/VerifyOtpLossPW.tsx';
             <Resource name="user" list={UserList} edit={UserEdit} />
             <Resource name="category" list={Category} edit={CategoryEdit} create={CategoryCreate} />
             <Resource name="order" list={OrderList} />
-          
           </Admin>
         }
       />

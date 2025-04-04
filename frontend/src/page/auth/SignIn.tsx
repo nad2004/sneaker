@@ -7,7 +7,7 @@ const AuthPage: React.FC = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
- 
+  window.dispatchEvent(new Event("cartUpdated"));
 const handleLogin = async (event: React.FormEvent) => {
   event.preventDefault(); // Ngăn chặn hành vi mặc định của form submit
 
@@ -19,6 +19,7 @@ const handleLogin = async (event: React.FormEvent) => {
       localStorage.setItem('user', JSON.stringify(response.data.data.user));
       setError(null);
       alert('Login successful');
+      window.dispatchEvent(new Event("cartUpdated"));
       navigate('/'); 
   } catch (err) {
       setError(err.response?.data?.message || 'Invalid credentials');
