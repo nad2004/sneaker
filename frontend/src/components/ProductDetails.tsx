@@ -69,6 +69,12 @@ const ProductDetails: React.FC = () => {
    } 
 
     try {
+      console.log({
+        userId: user?._id,
+        productId: product._id,
+        quantity: quantity,
+        size: selectedSize,
+      })
       const response = await axios.post(
         "http://localhost:8080/api/cart/create",
         {

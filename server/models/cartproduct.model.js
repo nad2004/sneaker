@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 const cartProductSchema = new mongoose.Schema({
     productId : {
         type : mongoose.Schema.ObjectId,
-        ref : 'product'
+        ref : 'products'
     },
     quantity : {
         type : Number,
@@ -15,12 +15,12 @@ const cartProductSchema = new mongoose.Schema({
     },
     userId : {
         type : mongoose.Schema.ObjectId,
-        ref : "User"
+        ref : "users"
     }
 },{
     timestamps : true
 })
 
-const CartProductModel = mongoose.model('cartProduct',cartProductSchema)
+const CartProductModel = mongoose.model('cartproducts',cartProductSchema)
 
 export default CartProductModel

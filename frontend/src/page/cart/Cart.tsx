@@ -27,7 +27,7 @@ const Cart: React.FC = () => {
         { withCredentials: true });
 
       const data = await response.data;
-      console.log("🔥 API trả về giỏ hàng:", data);
+      console.log(userId);
 
       if (data.success) {
         setCartItems(data.data);

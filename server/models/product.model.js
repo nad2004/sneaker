@@ -11,7 +11,7 @@ const productSchema = new mongoose.Schema({
     category : [
         {
             type : mongoose.Schema.ObjectId,
-            ref : 'category'
+            ref : 'categories'
         }
     ],
     unit : {
@@ -56,6 +56,6 @@ productSchema.index({
 })
 
 
-const ProductModel = mongoose.model('product',productSchema)
+const ProductModel = mongoose.model('products',productSchema)
 
 export default ProductModel

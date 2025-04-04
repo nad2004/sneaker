@@ -3,6 +3,7 @@ import UserModel from "../models/user.model.js";
 
 export const addToCartItemController = async(request,response)=>{
     try {
+        console.log("test")
         const  userId = request.body.userId;
         const { productId } = request.body
         const quantity = request.body.quantity;
@@ -60,12 +61,12 @@ export const addToCartItemController = async(request,response)=>{
 
 export const getCartItemController = async(request,response)=>{
     try {
-        const userId = request.userId
+        const {userId} = request.body
 
         const cartItem =  await CartProductModel.find({
             userId : userId
         }).populate('productId')
-
+        console.log(request)
         return response.json({
             data : cartItem,
             error : false,
@@ -83,8 +84,8 @@ export const getCartItemController = async(request,response)=>{
 
 export const updateCartItemQtyController = async(request,response)=>{
     try {
-        const userId = request.userId 
-        const { _id,qty } = request.body
+     
+        const { _id,qty,userId } = request.body
 
         if(!_id ||  !qty){
             return response.status(400).json({
@@ -117,8 +118,8 @@ export const updateCartItemQtyController = async(request,response)=>{
 
 export const deleteCartItemQtyController = async(request,response)=>{
     try {
-      const userId = request.userId // middleware
-      const { _id } = request.body 
+ 
+      const { _id,userId } = request.body 
       
       if(!_id){
         return response.status(400).json({
@@ -147,7 +148,7 @@ export const deleteCartItemQtyController = async(request,response)=>{
 }
 export const clearCartController = async (request, response) => {
     try {
-      const userId = request.userId; // Lấy userId từ middleware đã xác thực người dùng
+      const {userId} = request.body; // Lấy userId từ middleware đã xác thực người dùng
   
       // Xóa toàn bộ sản phẩm trong giỏ hàng của user này
       const clearCart = await CartProductModel.deleteMany({ userId: userId });

@@ -23,6 +23,7 @@ import Order from './page/user/Order.tsx';
 import ForgotPasswordPage from './page/auth/ForgotPasswordPage.tsx';
 import ResetPasswordPage from './page/auth/ResetPasswordPage.tsx';
 import VerifyOtpLossPW from './page/auth/VerifyOtpLossPW.tsx';
+import AdminChatPage from './page/adminchat/adminchat.tsx';
  export default function App() {
   const [search, setSearch] = useState("");
   return (
@@ -42,6 +43,7 @@ import VerifyOtpLossPW from './page/auth/VerifyOtpLossPW.tsx';
             <Route path="/login" element={<SignInPage />} />
             <Route path="/signup" element={<SignUpPage />} />
             <Route path="/payment-return" element={<VnpayReturn />} />
+            <Route path="/admin-chat" element={<AdminChatPage />} />
           </Route>
 
           {/* Các route authentication */}

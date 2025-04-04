@@ -1,6 +1,6 @@
 import { useState } from "react";
 import axios from "axios";
-import { MdSupportAgent } from "react-icons/md";
+
 
 const ChatBox = ({ onClose }) => {
   const [messages, setMessages] = useState<{ text: string; sender: string }[]>([]);
@@ -22,55 +22,40 @@ const ChatBox = ({ onClose }) => {
   };
 
   return (
-    <div
-      style={{
-        position: "fixed",
-        bottom: 20,
-        right: 20,
-        maxWidth: 400,
-        border: "1px solid #ccc",
-        padding: 20,
-        borderRadius: 10,
-        backgroundColor: "#fff",
-        boxShadow: "0px 4px 6px rgba(0,0,0,0.1)",
-      }}
-    >
-      <button onClick={onClose} style={{ float: "right", background: "red", color: "#fff", border: "none", padding: "5px 10px", cursor: "pointer" }}>
-        ✕
-      </button>
-      <h3>Chat Hỗ Trợ</h3>
-      <div style={{ height: 300, overflowY: "auto", marginBottom: 10 }}>
-        {messages.map((msg, index) => (
-          <div key={index} style={{ textAlign: msg.sender === "user" ? "right" : "left", margin: "5px 0" }}>
-            <span style={{ display: "inline-block", padding: 10, borderRadius: 8, backgroundColor: msg.sender === "user" ? "#007bff" : "#f1f1f1", color: msg.sender === "user" ? "#fff" : "#000" }}>
-              {msg.text}
-            </span>
-          </div>
-        ))}
+    <div className="fixed bottom-5 z-50 right-5 max-w-[450px] border border-gray-300 p-5 rounded-lg bg-white shadow-lg">
+  {/* Nút đóng */}
+  <button onClick={onClose} className="float-right bg-red-500 text-white px-3 py-1 rounded cursor-pointer">
+    ✕
+  </button>
+  
+  <h3 className="text-lg font-semibold mb-3">Geimini Chat</h3>
+  
+  {/* Khung tin nhắn */}
+  <div className="h-80 overflow-y-auto mb-3 space-y-2">
+    {messages.map((msg, index) => (
+      <div key={index} className={`flex ${msg.sender === "user" ? "justify-end" : "justify-start"}`}>
+        <span className={`inline-block px-3 py-2 rounded-lg ${msg.sender === "user" ? "bg-blue-500 text-white" : "bg-gray-200 text-black"}`}>
+          {msg.text}
+        </span>
       </div>
+    ))}
+  </div>
 
-      <div style={{ display: "flex", gap: 10 }}>
-        <input type="text" value={input} onChange={(e) => setInput(e.target.value)} style={{ flex: 1, padding: 8 }} placeholder="Nhập tin nhắn..." />
-        <button onClick={sendMessage} style={{ padding: 8 }}>Gửi</button>
-      </div>
-    </div>
+  {/* Ô nhập và nút gửi */}
+  <div className="flex gap-2">
+    <input
+      type="text"
+      value={input}
+      onChange={(e) => setInput(e.target.value)}
+      className="flex-1 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+      placeholder="Nhập tin nhắn..."
+    />
+    <button onClick={sendMessage} className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">
+      Gửi
+    </button>
+  </div>
+</div>
   );
 };
 
-const SupportChat = () => {
-  const [isChatOpen, setIsChatOpen] = useState(false);
-
-  return (
-    <>
-      {/* Nút mở ChatBox */}
-      <a href="#" className="flex items-center gap-1 hover:text-gray-900" onClick={(e) => { e.preventDefault(); setIsChatOpen(true); }}>
-        <MdSupportAgent className="text-gray-500 text-2xl" />
-      </a>
-
-      {/* Hiển thị ChatBox nếu isChatOpen = true */}
-      {isChatOpen && <ChatBox onClose={() => setIsChatOpen(false)} />}
-    </>
-  );
-};
-
-export default SupportChat;
+export default ChatBox;

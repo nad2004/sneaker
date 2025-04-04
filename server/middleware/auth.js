@@ -26,9 +26,11 @@ const auth = async (request, response, next) => {
         // Check nếu cần quyền admin
         if (user.role === "ADMIN") {
             next();
+        }else if(token) {
+            next();
         }
         request.userId = decoded.id;
-        next();
+      
     } catch (error) {
         if (error.name === "JsonWebTokenError") {
             return response.status(401).json({

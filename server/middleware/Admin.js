@@ -2,7 +2,7 @@ import UserModel from "../models/user.model.js"
 
 export const admin = async(request,response,next)=>{
     try {
-       const  userId = request.userId
+       const  {userId} = request.body
 
        const user = await UserModel.findById(userId)
 

@@ -54,13 +54,13 @@ const userSchema = new mongoose.Schema({
     shopping_cart: [
         {
             type: mongoose.Schema.ObjectId,
-            ref: "cartProduct"
+            ref: "cartproducts"
         }
-    ],
+    ],  
     orderHistory: [
         {
             type: mongoose.Schema.ObjectId,
-            ref: "order"
+            ref: "orders"
         }
     ],
     forgot_password_otp: {
@@ -84,6 +84,6 @@ const userSchema = new mongoose.Schema({
     timestamps: true
 });
 
-const UserModel = mongoose.model("User", userSchema);
+const UserModel = mongoose.model("users", userSchema);
 
 export default UserModel;

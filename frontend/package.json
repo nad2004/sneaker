@@ -29,6 +29,7 @@
     "react-redux": "^9.2.0",
     "react-router-dom": "^7.3.0",
     "recharts": "^2.15.1",
+    "socket.io-client": "^4.8.1",
     "swiper": "^11.2.6",
     "yup": "^1.6.1"
   },
