@@ -1,7 +1,6 @@
 import { Server } from 'socket.io';
 
 export default function handleMessage(server) {
-    console.log('test');
     const io = new Server(server, {
       cors: {
         credentials: true,

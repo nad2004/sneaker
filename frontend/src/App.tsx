@@ -27,7 +27,8 @@ import AdminChatPage from './page/adminchat/adminchat.tsx';
  export default function App() {
   const [search, setSearch] = useState("");
   return (
-    <StrictMode>
+    
+      <>
       <Router>
         <Routes>
           {/* Các route frontend */}
@@ -86,7 +87,8 @@ import AdminChatPage from './page/adminchat/adminchat.tsx';
       />
     </Routes>
   </Router>
-    </StrictMode>
+      </>
+   
   );
 }
 

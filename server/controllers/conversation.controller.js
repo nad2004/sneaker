@@ -46,3 +46,21 @@ export async function getUserConversations(req , res){
         });
       }
 }
+
+export async function updateConversationsMessage(req , res){
+  const  {Message, conversationId}  = req.body;
+  try {
+      const conversations = await ConversationModel.updateOne({_id: conversationId},
+        { messages: Message});
+      res.status(200).json({
+          error : false,
+          success : true
+      });
+    } catch (err) {
+      res.status(500).json({
+          data: err,
+          error : true,
+          success : false
+      });
+    }
+}

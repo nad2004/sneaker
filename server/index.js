@@ -17,7 +17,6 @@ import reviewRouter from './route/review.route.js'
 import paymentRoute from './route/payment.route.js'
 import chatRouter from './route/chat.route.js'
 import conversationRouter from './route/conversation.route.js'
-import messageRouter from './route/message.route.js'
 import handleMessage from './utils/message.js'
 
 const app = express()
@@ -54,7 +53,6 @@ app.use('/api/review',reviewRouter)
 app.use('/api/payment',paymentRoute)
 app.use('/api/chat',chatRouter)
 app.use('/api/conversation',conversationRouter)
-app.use('/api/message',messageRouter)
 
 connectDB().then(()=>{
     app.listen(PORT,()=>{

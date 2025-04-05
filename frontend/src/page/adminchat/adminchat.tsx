@@ -29,24 +29,21 @@ const AdminChatPage = () => {
     }
   };
 
-  const fetchMessages = async (conversationId: string) => {
+  const updateMessages = async (conversationId: string, msg: any) => {
     try {
-      const res = await axios.post(
-        "http://localhost:8080/api/message/get-messages-by-conversationId",
-        { conversationId },
+      axios.put(
+        "http://localhost:8080/api/conversation/updatemessage",
+        { conversationId: conversationId, Message: [...messages, msg] },
         { withCredentials: true }
       );
-      if (res.data.success) {
-        setMessages(res.data.data);
-      }
-    } catch (err) {
-      console.error("Lỗi khi lấy tin nhắn:", err);
+    } catch (error) {
+      console.error("Lỗi gửi tin nhắn:", error);
     }
   };
 
   const handleOpenConversation = (conv: any) => {
     setCurrentConv(conv);
-    // fetchMessages(conv._id);
+    setMessages(conv.messages || []);
     socketRef.current.emit("join-conversation", conv._id);
   };
 
@@ -62,9 +59,11 @@ const AdminChatPage = () => {
     };
     // Gửi lên server
     socketRef.current.emit("send-message", messageData);
+    updateMessages(currentConv._id, messageData.message);
     // Thêm vào UI
     setMessages((prev) => [...prev, messageData.message]);
     setInput("");
+    fetchConversations();
   };
   useEffect(() => {
     const socket = io("http://localhost:8081", {
@@ -93,7 +92,7 @@ const AdminChatPage = () => {
     if (!socket) return;
 
     const handleReceive = (msg: any) => {
-        
+      updateMessages(currentConv._id, msg);
       setMessages((prev) => [...prev, msg]);
     };
 

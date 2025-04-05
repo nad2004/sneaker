@@ -11,6 +11,7 @@ const Chat = ({ onClose }) => {
 
   // 🔌 Khởi tạo socket chỉ 1 lần
   useEffect(() => {
+    
     const socket = io("http://localhost:8081", {
       withCredentials: true,
     });
@@ -36,18 +37,25 @@ const Chat = ({ onClose }) => {
 
   // 📩 Lắng nghe tin nhắn
   useEffect(() => {
-    const socket = socketRef.current;
-    if (!socket) return;
+    if (!socketRef.current) return;
 
     const handleReceive = (msg: any) => {
-        
+      try {
+        axios.put(
+          "http://localhost:8080/api/conversation/updatemessage",
+          { conversationId: conversation._id, Message: [...messages, msg] },
+          { withCredentials: true }
+        );
+      } catch (error) {
+        console.error("Lỗi gửi tin nhắn:", error);
+      }
       setMessages((prev) => [...prev, msg]);
     };
 
-    socket.on("receive-message", handleReceive);
+    socketRef.current.on("receive-message", handleReceive);
 
     return () => {
-      socket.off("receive-message", handleReceive);
+      socketRef.current.off("receive-message", handleReceive);
     };
   }, []);
 
@@ -64,7 +72,7 @@ const Chat = ({ onClose }) => {
         if (response.data.success) {
           const conv = response.data.data;
           setConversation(conv);
-          // ✅ Tham gia room sau khi socket đã connect và có conversation
+          setMessages(conv.messages || []); 
           socketRef.current.emit("join-conversation", conv._id);
         }
       } catch (error) {
@@ -81,7 +89,15 @@ const Chat = ({ onClose }) => {
 
     const newMessage = { text: input, sender: "user" };
     setMessages((prev) => [...prev, newMessage]);
-
+    try {
+      axios.put(
+        "http://localhost:8080/api/conversation/updatemessage",
+        { conversationId: conversation._id, Message: [...messages, newMessage] },
+        { withCredentials: true }
+      );
+    } catch (error) {
+      console.error("Lỗi gửi tin nhắn:", error);
+    }
     socketRef.current?.emit("send-message", {
       conversationId: conversation._id,
       message: newMessage,
