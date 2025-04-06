@@ -9,21 +9,11 @@ const conversationSchema = new mongoose.Schema(
     }
    ],
    messages: [
-    { 
-        text: {
-            type: String,
-        },
-        sender: {
-            type: String,
-            enum: ["user", "admin"],
-            required: true,
-        },
+    {
+        type: mongoose.Schema.ObjectId,
+        ref: "messages",
     }
     ],
-    read: {
-        type: Boolean,
-        default: false,
-    },
 }, {
     timestamps: true
 });

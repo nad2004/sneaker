@@ -18,7 +18,7 @@ import paymentRoute from './route/payment.route.js'
 import chatRouter from './route/chat.route.js'
 import conversationRouter from './route/conversation.route.js'
 import handleMessage from './utils/message.js'
-
+import messageRouter from './route/message.route.js'
 const app = express()
 const wsServer = http.createServer();
 
@@ -53,7 +53,7 @@ app.use('/api/review',reviewRouter)
 app.use('/api/payment',paymentRoute)
 app.use('/api/chat',chatRouter)
 app.use('/api/conversation',conversationRouter)
-
+app.use('/api/message',messageRouter)
 connectDB().then(()=>{
     app.listen(PORT,()=>{
         console.log("Server is running",PORT)

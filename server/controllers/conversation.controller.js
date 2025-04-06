@@ -6,8 +6,8 @@ import ConversationModel from "../models/conversations.model.js";
   try {
     let conversation = await ConversationModel.findOne({
       members: { $all: [senderId, receiverId] },
-    });
-
+    }).populate("messages", "-id -conversation");
+    
     if (!conversation) {
       conversation = new ConversationModel({
         members: [senderId, receiverId],
@@ -30,9 +30,17 @@ import ConversationModel from "../models/conversations.model.js";
 export async function getUserConversations(req , res){
     const  userId  = "67ebaf8ff566e9b5e7312562";
     try {
-        const conversations = await ConversationModel.find({
-          members: { $in: userId },
-        }).populate("members", "-password -__v");
+      const conversations = await ConversationModel.find({
+        members: { $in: userId },
+      })
+        .populate({
+          path: "members",
+          select: "-password -__v",
+        })
+        .populate({
+          path: "messages",
+          select: "-id -conversation",
+        });
         res.status(200).json({
             data: conversations,
             error : false,
@@ -46,12 +54,39 @@ export async function getUserConversations(req , res){
         });
       }
 }
+export async function getConversations(req , res){
+  const _id  = req.body;
 
+  try {
+    const conversations = await ConversationModel.findOne({
+      _id: _id,
+    })
+      .populate({
+        path: "members",
+        select: "-password -__v",
+      })
+      .populate({
+        path: "messages",
+      });
+      res.status(200).json({
+          data: conversations,
+          error : false,
+          success : true
+      });
+    } catch (err) {
+      res.status(500).json({
+          data: err.message,
+          error : true,
+          success : false
+      });
+    }
+}
 export async function updateConversationsMessage(req , res){
-  const  {Message, conversationId}  = req.body;
+  const  {MessageId, conversationId}  = req.body;
+
   try {
       const conversations = await ConversationModel.updateOne({_id: conversationId},
-        { messages: Message});
+        { $push: { messages: MessageId } });
       res.status(200).json({
           error : false,
           success : true

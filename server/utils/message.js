@@ -22,12 +22,13 @@ export default function handleMessage(server) {
       // Khi client gửi tin nhắn
       socket.on('send-message', ({ conversationId, message }) => {
         console.log(`Message from ${socket.id}: ${message.text}`);
-        socket.to(conversationId).emit('receive-message', message);
+        socket.to(conversationId).emit('receive-message', { conversationId, message });
       });
-  
+      
       // Khi client ngắt kết nối
       socket.on('disconnect', () => {
         console.log('User disconnected:', socket.id);
       });
+      
     });
   }

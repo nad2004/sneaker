@@ -8,11 +8,9 @@ const ChatBox = ({ onClose }) => {
 
   const sendMessage = async () => {
     if (!input.trim()) return;
-
     const newMessages = [...messages, { text: input, sender: "user" }];
     setMessages(newMessages);
     setInput("");
-
     try {
       const { data } = await axios.post("http://localhost:8080/api/chat", { message: input });
       setMessages([...newMessages, { text: data.reply, sender: "bot" }]);
@@ -22,7 +20,7 @@ const ChatBox = ({ onClose }) => {
   };
 
   return (
-    <div className="fixed bottom-5 z-50 right-5 max-w-[450px] border border-gray-300 p-5 rounded-lg bg-white shadow-lg">
+    <div className="max-w-[450px] border border-gray-300 p-5 rounded-lg bg-white shadow-lg">
   {/* Nút đóng */}
   <button onClick={onClose} className="float-right bg-red-500 text-white px-3 py-1 rounded cursor-pointer">
     ✕

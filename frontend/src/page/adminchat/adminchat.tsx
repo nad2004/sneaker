@@ -7,6 +7,7 @@ const AdminChatPage = () => {
   const [messages, setMessages] = useState<any[]>([]);
   const [input, setInput] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const messagesContainerRef = useRef<HTMLDivElement>(null);
   const socketRef = useRef<any>(null);
   useEffect(() => {
     fetchConversations();
@@ -14,10 +15,10 @@ const AdminChatPage = () => {
 
   const fetchConversations = async () => {
     try {
-    const userId = JSON.parse(localStorage.getItem("user") || "")?._id;
+      const user = JSON.parse(localStorage.getItem("user") || "{}");
       const res = await axios.post(
         "http://localhost:8080/api/conversation/getuserconversations",
-        {userId},
+        { userId: user._id },
         { withCredentials: true }
       );
       console.log(res.data);
@@ -28,28 +29,26 @@ const AdminChatPage = () => {
       console.error("Lỗi khi lấy conversation:", err);
     }
   };
-
   const updateMessages = async (conversationId: string, msg: any) => {
     try {
-      axios.put(
-        "http://localhost:8080/api/conversation/updatemessage",
-        { conversationId: conversationId, Message: [...messages, msg] },
+      const response = axios.post(
+        "http://localhost:8080/api/message/create",
+        { conversation: conversationId, text: msg.text, sender: msg.sender },
         { withCredentials: true }
       );
+      
+      response.then(res => setMessages([...messages, res.data.data])).catch(error => console.error("Lỗi gửi tin nhắn:", error));
     } catch (error) {
       console.error("Lỗi gửi tin nhắn:", error);
     }
   };
-
   const handleOpenConversation = (conv: any) => {
     setCurrentConv(conv);
     setMessages(conv.messages || []);
     socketRef.current.emit("join-conversation", conv._id);
   };
-
   const sendMessage = () => {
     if (!input.trim() || !currentConv) return;
-  
     const messageData = {
       conversationId: currentConv._id,
       message: {
@@ -61,7 +60,6 @@ const AdminChatPage = () => {
     socketRef.current.emit("send-message", messageData);
     updateMessages(currentConv._id, messageData.message);
     // Thêm vào UI
-    setMessages((prev) => [...prev, messageData.message]);
     setInput("");
     fetchConversations();
   };
@@ -88,20 +86,31 @@ const AdminChatPage = () => {
   }, []);
    // 📩 Lắng nghe tin nhắn
    useEffect(() => {
-    const socket = socketRef.current;
-    if (!socket) return;
-
+    if (!socketRef.current) return;
     const handleReceive = (msg: any) => {
-      updateMessages(currentConv._id, msg);
-      setMessages((prev) => [...prev, msg]);
+      fetchConversations();
+      setMessages((prevMessages) => {
+        return [
+          ...prevMessages,
+          { conversation: msg.conversationId, text: msg.message.text, sender: msg.message.sender },
+        ];
+      })
+      window.dispatchEvent(new Event("UnReadMessageUpdated"));
     };
-
-    socket.on("receive-message", handleReceive);
-
+    socketRef.current.on("receive-message", handleReceive);
     return () => {
-      socket.off("receive-message", handleReceive);
+      socketRef.current.off("receive-message", handleReceive);
     };
-  }, []); // ✅ Gắn lại listener khi đổi conversation
+  }, []);
+  useEffect(() => {
+    if (messagesEndRef.current && messagesContainerRef.current) {
+      messagesContainerRef.current.scrollTo({
+        top: messagesEndRef.current.offsetTop,
+        behavior: "smooth",
+      });
+    }
+  }, [messages]);
+  
   return (
     <div className="flex h-[700px]">
       {/* Sidebar */}
@@ -126,7 +135,10 @@ const AdminChatPage = () => {
           <h2 className="text-lg font-semibold mb-2">
             {currentConv ? `Đang chat với ${currentConv.members[0].name}` : "Chọn cuộc trò chuyện"}
           </h2>
-          <div className="space-y-2">
+          <div
+            ref={messagesContainerRef}
+            className="space-y-2 h-[500px] overflow-y-auto pr-2"
+          >
             {messages.map((msg, idx) => (
               <div
                 key={idx}
@@ -165,9 +177,10 @@ const AdminChatPage = () => {
               Gửi
             </button>
           </div>
-        )}
+        )}   
       </div>
     </div>
+    
   );
 };
 

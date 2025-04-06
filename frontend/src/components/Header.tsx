@@ -17,6 +17,7 @@ const Header: React.FC<HeaderProps> = ({ search, setSearch }) => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const [cartCount, setCartCount] = useState(0);
+  const [unReadMessageCount, setUnReadMessageCount] = useState(0);
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [isChatSupportOpen, setIsChatSupportOpen] = useState(false);
   const toggleSupportChat = () => {
@@ -28,7 +29,6 @@ const Header: React.FC<HeaderProps> = ({ search, setSearch }) => {
   useEffect(() => {
     const storedUserString = localStorage.getItem("user");
     const storedUser = storedUserString && storedUserString !== "undefined" ? JSON.parse(storedUserString) : null;
-
     if (storedUser) {
       setUser({ id: storedUser._id, name: storedUser.name, avatar: storedUser.avatar, role: storedUser.role});
     }
@@ -37,9 +37,7 @@ const Header: React.FC<HeaderProps> = ({ search, setSearch }) => {
     axios.get("http://localhost:8080/api/user/logout", { data: { userid: user?.id }, withCredentials: true })
     localStorage.removeItem("user");
     setUser(null);
-    
     navigate("/login");
-    
   };
   const handleSearchClick = () => {
     const queryParams = new URLSearchParams({
@@ -47,7 +45,6 @@ const Header: React.FC<HeaderProps> = ({ search, setSearch }) => {
     });
     navigate(`/search-product?${queryParams.toString()}`);
   };
-
   const fetchProductOptions = async (input: string) => {
     try {
       setLoading(true);
@@ -59,7 +56,6 @@ const Header: React.FC<HeaderProps> = ({ search, setSearch }) => {
       setLoading(false);
     }
   };
-
   useEffect(() => {
     if (search.length >= 2) {
       fetchProductOptions(search);
@@ -67,13 +63,11 @@ const Header: React.FC<HeaderProps> = ({ search, setSearch }) => {
       setProductOptions([]);
     }
   }, [search]);
-
   useEffect(() => {
     const updateCartCount = async () => {
       try {
         const response = await axios.post("http://localhost:8080/api/cart/get", {userId: JSON.parse(localStorage.getItem('user') || '{}')._id},{ withCredentials: true });
         const data = await response.data
-        console.log(data.data)
         setCartCount(data.data.length);
       } catch (error) {
         setCartCount(0);
@@ -81,18 +75,44 @@ const Header: React.FC<HeaderProps> = ({ search, setSearch }) => {
       }
     };
     updateCartCount();
-  
     const handleCartUpdate = () => {
       updateCartCount();
     };
-  
     window.addEventListener("cartUpdated", handleCartUpdate);
-  
     return () => {
       window.removeEventListener("cartUpdated", handleCartUpdate);
     };
   }, []);
-
+  useEffect(() => {
+    const updateUnReadMessageCount = async () => {
+      try {
+        const user = JSON.parse(localStorage.getItem("user") || "{}");
+        const response = await axios.post(
+          "http://localhost:8080/api/conversation/getconversationdetail",
+          { senderId: user._id },
+          { withCredentials: true }
+        );
+        if (response.data.success) {
+          if(user.role === "CUSTOMER"){
+            setUnReadMessageCount(response.data.data.messages.filter((mes) => !mes.read && mes.sender === "admin").length);
+          }else{
+            setUnReadMessageCount(response.data.data.messages.filter((mes) => !mes.read && mes.sender === "user").length);
+          } 
+        }
+      } catch (error) {
+        setUnReadMessageCount(0);
+        console.error("Lỗi lấy conversation:", error);
+      }
+    };
+    updateUnReadMessageCount();
+    const handleUnReadMessageUpdate = () => {
+      updateUnReadMessageCount();
+    };
+    window.addEventListener("UnReadMessageUpdated", handleUnReadMessageUpdate);
+    return () => {
+      window.removeEventListener("UnReadMessageUpdated", handleUnReadMessageUpdate);
+    };
+  }, []);
   return (
     <div>
   {/* Thanh thông báo trên cùng */}
@@ -166,12 +186,19 @@ const Header: React.FC<HeaderProps> = ({ search, setSearch }) => {
         <button onClick={toggleChat}>
           <img src={iconGeimi} className="w-6 h-6 sm:w-8 sm:h-8" />
         </button>
-          <button onClick={toggleSupportChat}>
-          <MdOutlineSupportAgent className="w-4 h-4 sm:w-6 sm:h-6" />
-          </button>
+        {user?.role === "CUSTOMER" && (
+           <button onClick={toggleSupportChat} className="relative">
+           <MdOutlineSupportAgent className="w-4 h-4 sm:w-6 sm:h-6" />
+           <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs px-1 rounded-full">
+             {unReadMessageCount || 0}
+           </span>
+           </button>
+        )}
         {/* Chat Box nếu mở */}
+        <div className="fixed bottom-5 right-5 z-50 flex gap-4">
         {isChatOpen && <ChatBox onClose={toggleChat} />}
         {isChatSupportOpen && <Chat onClose={toggleSupportChat} />}
+        </div>
         {/* User */}
         {user ? (
           <div className="relative group">
