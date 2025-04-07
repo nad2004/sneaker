@@ -4,6 +4,7 @@ import axios from "axios";
 
 const Chat = ({ onClose }) => {
   const [messages, setMessages] = useState<{ text: string; sender: string }[]>([]);
+  const [activeMenuId, setActiveMenuId] = useState<string | null>(null);
   const [input, setInput] = useState("");
   const [conversation, setConversation] = useState<any>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -32,9 +33,7 @@ const Chat = ({ onClose }) => {
   }, []);
   const fetchConversation = async () => {
     try {
-      
       const user = JSON.parse(localStorage.getItem("user") || "{}");
-      
       const response = await axios.post(
         "http://localhost:8080/api/conversation/getconversationdetail",
         { senderId: user._id },
@@ -55,10 +54,8 @@ const Chat = ({ onClose }) => {
   useEffect(() => {
     if (!socketRef.current) return;
     const handleReceive = (msg: any) => {
-      setMessages((prevMessages) => [
-        ...prevMessages, {conversation: msg.conversationId, text: msg.message.text, sender: msg.message.sender}])
+      setMessages((prevMessages) => [...prevMessages, {conversation: msg.conversationId, text: msg.message.text, sender: msg.message.sender, tempId: msg.tempId}])
         markMessagesRead(msg.conversationId);
-        window.dispatchEvent(new Event("UnReadMessageUpdated"));
     };
     socketRef.current.on("receive-message", handleReceive);
     return () => {
@@ -68,6 +65,10 @@ const Chat = ({ onClose }) => {
   // 📥 Lấy conversation
   useEffect(() => {
     fetchConversation();
+    window.addEventListener("updateMessageClient", fetchConversation);
+    return () => {
+      window.removeEventListener("updateMessageClient", fetchConversation);
+    };
   }, []);
   const markMessagesRead = async (conversationId: string) => {
     try {
@@ -90,6 +91,12 @@ const Chat = ({ onClose }) => {
   const sendMessage = () => {
     if (!input.trim() || !conversation) return;
     const newMessage = { text: input, sender: "user" };
+    const tempId = Date.now().toString(); // tạo ID tạm  
+    socketRef.current?.emit("send-message", {
+      conversationId: conversation._id,
+      message: newMessage,
+      tempId,
+    });
     try {
       const response = axios.post(
         "http://localhost:8080/api/message/create",
@@ -100,10 +107,6 @@ const Chat = ({ onClose }) => {
     } catch (error) {
       console.error("Lỗi gửi tin nhắn:", error);
     }
-    socketRef.current?.emit("send-message", {
-      conversationId: conversation._id,
-      message: newMessage,
-    });
     setInput("");
   };
   useEffect(() => {
@@ -111,7 +114,27 @@ const Chat = ({ onClose }) => {
       messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
     }
   }, [messages]); // chạy mỗi khi danh sách messages thay đổi
-  
+  const recallMessage = async (messageId: string) => {
+    try {
+      await axios.delete("http://localhost:8080/api/message/delete", {
+        data: { messageId },
+        withCredentials: true,
+      });
+      dispatchEvent(new Event("updateMessageClient"));
+    }
+    catch (error) {
+      console.error("Lỗi thu hồi tin nhắn:", error);
+    }
+  };
+  const handleOpenRecall = (messageId: string) => {
+    if (activeMenuId === messageId) {
+      // Nếu đang mở => đóng
+      setActiveMenuId(null);
+    } else {
+      // Nếu đang đóng hoặc đang mở tin nhắn khác => mở
+      setActiveMenuId(messageId);
+    }
+  };
   return (
     <div className="max-w-[450px] border border-gray-300 p-5 rounded-lg bg-white shadow-lg">
       <button
@@ -135,6 +158,26 @@ const Chat = ({ onClose }) => {
             >
               {msg.text}
             </span>
+            {msg.sender === "user" && (
+              <div className="inline-block ml-2 relative">
+                {/* Nút 3 chấm */}
+                <button className="opacity-100" onClick={() => handleOpenRecall(msg._id)}>
+                  ⋯
+                </button>
+
+                {/* Menu thu hồi */}
+                {activeMenuId === msg._id && (
+                  <div className="absolute right-0 mt-1 w-28 bg-white border rounded shadow-md z-10">
+                    <button
+                      onClick={() => recallMessage(msg._id)}
+                      className="block w-full px-3 py-1 text-sm text-red-600 hover:bg-gray-100 text-left"
+                    >
+                      Thu hồi
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         ))}
         <div ref={messagesEndRef} /> 

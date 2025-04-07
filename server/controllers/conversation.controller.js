@@ -56,7 +56,6 @@ export async function getUserConversations(req , res){
 }
 export async function getConversations(req , res){
   const _id  = req.body;
-
   try {
     const conversations = await ConversationModel.findOne({
       _id: _id,

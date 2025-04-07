@@ -44,3 +44,27 @@ export const markMessagesAsRead = async (req, res) => {
       res.status(500).json({ success: false, message: err.message });
     }
   };
+  export const deleteMessage = async (req, res) => {
+    const { messageId } = req.body;
+  
+    try {
+      // 1. Tìm tin nhắn cần xoá
+      const message = await MessageModel.findById(messageId);
+      if (!message) {
+        return res.status(404).json({ success: false, message: "Không tìm thấy tin nhắn" });
+      }
+  
+      // 2. Xoá khỏi collection messages
+      await MessageModel.findByIdAndDelete(messageId);
+  
+      // 3. Gỡ ID khỏi conversation.messages
+      await ConversationModel.findByIdAndUpdate(
+        message.conversation,
+        { $pull: { messages: messageId } }
+      );
+  
+      res.status(200).json({ success: true, message: "Đã xoá tin nhắn" });
+    } catch (err) {
+      res.status(500).json({ success: false, message: err.message });
+    }
+  };

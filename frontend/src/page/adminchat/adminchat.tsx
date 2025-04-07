@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import axios from "axios";
 import { io } from "socket.io-client";
 const AdminChatPage = () => {
@@ -6,13 +6,38 @@ const AdminChatPage = () => {
   const [currentConv, setCurrentConv] = useState<any | null>(null);
   const [messages, setMessages] = useState<any[]>([]);
   const [input, setInput] = useState("");
+  const [activeMenuId, setActiveMenuId] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
   const socketRef = useRef<any>(null);
+  const currentConvRef = useRef<any>(null);
+  useEffect(() => {
+    currentConvRef.current = currentConv;
+  }, [currentConv]);
   useEffect(() => {
     fetchConversations();
+    window.addEventListener("updateMessageClient", fetchConversation);
+    return () => {
+      window.removeEventListener("updateMessageClient", fetchConversation);
+    };
   }, []);
-
+  const fetchConversation = useCallback(async () => {
+    if (!currentConvRef) return;
+    try {
+      const response = await axios.post(
+        "http://localhost:8080/api/conversation/getconversation",
+        { _id: currentConvRef.current._id },
+        { withCredentials: true }
+      );
+      if (response.data.success) {
+        const conv = response.data.data;
+        setCurrentConv(conv);
+        setMessages(conv.messages || []);
+      }
+    } catch (error) {
+      console.error("Lỗi lấy conversation:", error);
+    }
+  }, [currentConv]);
   const fetchConversations = async () => {
     try {
       const user = JSON.parse(localStorage.getItem("user") || "{}");
@@ -43,23 +68,26 @@ const AdminChatPage = () => {
     }
   };
   const handleOpenConversation = (conv: any) => {
+    
     setCurrentConv(conv);
     setMessages(conv.messages || []);
     socketRef.current.emit("join-conversation", conv._id);
   };
   const sendMessage = () => {
     if (!input.trim() || !currentConv) return;
+    const tempId = Date.now().toString();
     const messageData = {
       conversationId: currentConv._id,
       message: {
         text: input,
         sender: "admin",
       },
+      tempId,
     };
     // Gửi lên server
     socketRef.current.emit("send-message", messageData);
     updateMessages(currentConv._id, messageData.message);
-    // Thêm vào UI
+
     setInput("");
     fetchConversations();
   };
@@ -92,7 +120,7 @@ const AdminChatPage = () => {
       setMessages((prevMessages) => {
         return [
           ...prevMessages,
-          { conversation: msg.conversationId, text: msg.message.text, sender: msg.message.sender },
+          { conversation: msg.conversationId, text: msg.message.text, sender: msg.message.sender, tempId: msg.tempId }, 
         ];
       })
       window.dispatchEvent(new Event("UnReadMessageUpdated"));
@@ -110,7 +138,27 @@ const AdminChatPage = () => {
       });
     }
   }, [messages]);
-  
+  const recallMessage = async (messageId: string) => {
+    try {
+      await axios.delete("http://localhost:8080/api/message/delete", {
+        data: { messageId },
+        withCredentials: true,
+      });
+      dispatchEvent(new Event("updateMessageClient"));
+    }
+    catch (error) {
+      console.error("Lỗi thu hồi tin nhắn:", error);
+    }
+  };
+  const handleOpenRecall = (messageId: string) => {
+    if (activeMenuId === messageId) {
+      // Nếu đang mở => đóng
+      setActiveMenuId(null);
+    } else {
+      // Nếu đang đóng hoặc đang mở tin nhắn khác => mở
+      setActiveMenuId(messageId);
+    }
+  };
   return (
     <div className="flex h-[700px]">
       {/* Sidebar */}
@@ -155,6 +203,26 @@ const AdminChatPage = () => {
                 >
                   {msg.text}
                 </div>
+                {msg.sender === "admin" && (
+              <div className="inline-block ml-2 relative">
+                {/* Nút 3 chấm */}
+                <button className="opacity-100" onClick={() => handleOpenRecall(msg._id)}>
+                  ⋯
+                </button>
+
+                {/* Menu thu hồi */}
+                {activeMenuId === msg._id && (
+                  <div className="absolute right-0 mt-1 w-28 bg-white border rounded shadow-md z-10">
+                    <button
+                      onClick={() => recallMessage(msg._id)}
+                      className="block w-full px-3 py-1 text-sm text-red-600 hover:bg-gray-100 text-left"
+                    >
+                      Thu hồi
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
               </div>
             ))}
             <div ref={messagesEndRef} />

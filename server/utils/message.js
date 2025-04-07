@@ -20,9 +20,9 @@ export default function handleMessage(server) {
       });
   
       // Khi client gửi tin nhắn
-      socket.on('send-message', ({ conversationId, message }) => {
+      socket.on('send-message', ({ conversationId, message, tempId }) => {
         console.log(`Message from ${socket.id}: ${message.text}`);
-        socket.to(conversationId).emit('receive-message', { conversationId, message });
+        socket.to(conversationId).emit('receive-message', { conversationId, message, tempId }); 
       });
       
       // Khi client ngắt kết nối
