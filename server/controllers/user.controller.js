@@ -9,7 +9,7 @@ import generatedOtp from '../utils/generatedOtp.js'
 import forgotPasswordTemplate from '../utils/forgotPasswordTemplate.js'
 import jwt from 'jsonwebtoken'
 import { OAuth2Client } from "google-auth-library";
-const client = new OAuth2Client("YOUR_GOOGLE_CLIENT_ID");
+const client = new OAuth2Client("519708215904-16r1qqurenv2q04maomojoflaitglp6v.apps.googleusercontent.com");
 export const getUserController = async(request,response)=>{
     try {
         
