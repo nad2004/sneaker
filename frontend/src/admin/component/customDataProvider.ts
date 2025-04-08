@@ -185,10 +185,11 @@ const customDataProvider: DataProvider = {
     },
 
     update: async (resource, params) => {
+        const user = JSON.parse(localStorage.getItem("user") || "{}")
         try {
             const response = await axios.put(
                 `${apiUrl}/${resource}/update-${resource}-details`, 
-                { _id: params.id, ...params.data },
+                { userId:user._id, _id: params.id, ...params.data },
                 { withCredentials: true }
             );
             const updated = await axios.post(`${apiUrl}/${resource}/get-${resource}-details`, { id: params.id });
