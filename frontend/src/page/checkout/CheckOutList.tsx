@@ -157,7 +157,6 @@ const CheckOutList: React.FC = () => {
         orderId: orderId,
         amount: amount
       });
-      console.log(response.data);
       setPaymentData(response.data);
       setLoading(false);
       setOpenPayment(true);
@@ -169,11 +168,8 @@ const CheckOutList: React.FC = () => {
   };
   const handleClose = () => {
       try{
-        axios.delete("http://localhost:8080/api/order/delete", {
-          data: { _id: id },
-          withCredentials: true
-        });
-        navigate("/payment-return");
+
+        navigate("/");
       }catch (error) {
         console.error("Lỗi khi xóa đơn hàng:", error);
       }
@@ -196,12 +192,11 @@ const CheckOutList: React.FC = () => {
       }, {withCredentials: true });
   
       const data = await response.data;
-      setId(data.data[0]._id);
+      setId(data.data[0]._id); 
       if (data.success) {
         alert("Đặt hàng thành công!");
         window.dispatchEvent(new Event("cartUpdated"));
         if(payment_method === "USING DEBIT CARD"){
-          console.log(data.data[0].orderId, data.data[0].totalAmt);
           generateQR({orderId: data.data[0].orderId,  amount: data.data[0].totalAmt});
         }else{
           navigate("/");

@@ -2,7 +2,7 @@ import axios from "axios";
 import crypto from "crypto";
 import QRCode from "qrcode";
 import moment from "moment";
-
+import OrderModel from "../models/order.model.js";
 export async function createCollectionLink (req, res){
     //https://developers.momo.vn/#/docs/en/aiov2/?id=payment-method
 //parameters
@@ -201,41 +201,51 @@ export async function generateQRVNPay(req, res){
         res.status(500).json({ error: "Lỗi tạo QR", details: error.message });
     }
   }
-  export async function handleVnpayReturn (req, res)  {
-    let vnp_Params = req.query;
 
-    // Lấy vnp_SecureHash từ URL trả về của VNPay
-    const secureHash = vnp_Params["vnp_SecureHash"];
-
-    // Xóa SecureHash & SecureHashType để tạo chữ ký kiểm tra
-    delete vnp_Params["vnp_SecureHash"];
-    delete vnp_Params["vnp_SecureHashType"];
-
-    // Sắp xếp tham số theo thứ tự a-z
-    vnp_Params = Object.keys(vnp_Params)
-        .sort()
-        .reduce((acc, key) => {
-            acc[key] = vnp_Params[key];
-            return acc;
-        }, {});
-
-    // Tạo chữ ký bảo mật mới
-    const signData = querystring.stringify(vnp_Params, { encode: false });
-    const hmac = crypto.createHmac("sha512", vnp_HashSecret);
-    const signed = hmac.update(Buffer.from(signData, "utf-8")).digest("hex");
-
-    // Kiểm tra chữ ký
-    if (secureHash !== signed) {
-        return res.redirect("http://localhost:5173/payment-failed?error=invalid_signature");
-    }
-
-    // Kiểm tra mã phản hồi từ VNPay
-    const responseCode = vnp_Params["vnp_ResponseCode"];
-    if (responseCode === "00") {
-        // Thanh toán thành công
-        return res.redirect(`http://localhost:5173/payment-success?orderId=${vnp_Params["vnp_TxnRef"]}`);
-    } else {
-        // Thanh toán thất bại
-        return res.redirect(`http://localhost:5173/payment-failed?orderId=${vnp_Params["vnp_TxnRef"]}&error=${responseCode}`);
-    }
-};
+  export async function handleVnpayReturn(req, res) {
+      let vnp_Params = req.query;
+      const secureHash = vnp_Params["vnp_SecureHash"];
+      delete vnp_Params["vnp_SecureHash"];
+      delete vnp_Params["vnp_SecureHashType"];
+  
+      vnp_Params = Object.keys(vnp_Params)
+          .sort()
+          .reduce((acc, key) => {
+              acc[key] = vnp_Params[key];
+              return acc;
+          }, {});
+  
+      const signData = querystring.stringify(vnp_Params, { encode: false });
+      const hmac = crypto.createHmac("sha512", vnp_HashSecret);
+      const signed = hmac.update(Buffer.from(signData, "utf-8")).digest("hex");
+  
+      if (secureHash !== signed) {
+          return res.redirect("http://localhost:5173/payment-failed?error=invalid_signature");
+      }
+  
+      const responseCode = vnp_Params["vnp_ResponseCode"];
+      const orderId = vnp_Params["vnp_TxnRef"];
+  
+      if (responseCode === "00") {
+          try {
+              // Cập nhật đơn hàng nếu thanh toán thành công
+              await OrderModel.updateOne(
+                  { _id: orderId },
+                  {
+                      $set: {
+                          payment_status: "Success",
+                          delivery_status: "OrderPaid",
+                      },
+                  }
+              );
+  
+              return res.redirect(`http://localhost:5173/payment-success?orderId=${orderId}`);
+          } catch (err) {
+              console.error("❌ Lỗi khi cập nhật đơn hàng:", err);
+              return res.redirect(`http://localhost:5173/payment-failed?orderId=${orderId}&error=update_failed`);
+          }
+      } else {
+          return res.redirect(`http://localhost:5173/payment-failed?orderId=${orderId}&error=${responseCode}`);
+      }
+  }
+  

@@ -17,6 +17,14 @@ const VnpayReturn: React.FC = () => {
     if (responseCode === "00") {
       setStatus("success"); // Thanh toán thành công
     } else {
+      try{
+        axios.delete("http://localhost:8080/api/order/delete", {
+          data: { _id: orderId },
+          withCredentials: true
+        });
+      } catch (error) {
+        console.error("Lỗi khi huỷ đơn hàng:", error);
+      }
       setStatus("failed");
       setErrorCode(responseCode);
       alert("Thanh toán không thành công đơn hàng bị huỷ") // Lưu mã lỗi nếu có

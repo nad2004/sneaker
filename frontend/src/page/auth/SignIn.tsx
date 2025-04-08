@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { GoogleLogin, GoogleOAuthProvider } from "@react-oauth/google";
 const AuthPage: React.FC = () => {
   
   const [email, setEmail] = useState('');
@@ -25,7 +26,23 @@ const handleLogin = async (event: React.FormEvent) => {
       setError(err.response?.data?.message || 'Invalid credentials');
   }
 };
-
+const handleGoogleLoginSuccess = async (credentialResponse: any) => {
+  try {
+    const res = await axios.post("http://localhost:8080/api/user/google-login", {
+      credential: credentialResponse.credential,
+    }, { withCredentials: true });
+    if (res.data.error) {
+      alert(res.data.error);
+      return;
+    }
+    console.log(res.data);
+    localStorage.setItem('user', JSON.stringify(res.data.user));
+    alert("Login with Google successful!");
+    navigate('/');
+  } catch (error) {
+    console.error("Google login failed:", error);
+  }
+};
 
   return (
     <div className="flex justify-center items-center h-screen">
@@ -87,6 +104,16 @@ const handleLogin = async (event: React.FormEvent) => {
             Log in
           </button>
         </form>
+        <GoogleOAuthProvider clientId="519708215904-16r1qqurenv2q04maomojoflaitglp6v.apps.googleusercontent.com">
+          <div className="mt-6 text-center">
+                <GoogleLogin
+                  onSuccess={handleGoogleLoginSuccess}
+                  onError={() => {
+                    console.log('Login Failed');
+                  }}
+                />
+              </div>
+          </GoogleOAuthProvider>
       </div>
     </div>
   );

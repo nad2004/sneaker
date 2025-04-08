@@ -8,6 +8,8 @@ import uploadImageClodinary from '../utils/uploadImageClodinary.js'
 import generatedOtp from '../utils/generatedOtp.js'
 import forgotPasswordTemplate from '../utils/forgotPasswordTemplate.js'
 import jwt from 'jsonwebtoken'
+import { OAuth2Client } from "google-auth-library";
+const client = new OAuth2Client("YOUR_GOOGLE_CLIENT_ID");
 export const getUserController = async(request,response)=>{
     try {
         
@@ -705,3 +707,58 @@ export const deleteUser = async(request,response)=>{
         })
     }
 }
+export const googleLogin = async (req, res) => {
+    const { credential } = req.body; // nhận token từ frontend
+  
+    try {
+      // 1. Verify token từ Google
+      const ticket = await client.verifyIdToken({
+        idToken: credential,
+        audience: "519708215904-16r1qqurenv2q04maomojoflaitglp6v.apps.googleusercontent.com",
+      });
+  
+      const payload = ticket.getPayload();
+      const { sub, email, name, picture } = payload;
+  
+      // 2. Kiểm tra user đã tồn tại chưa
+      let user = await UserModel.findOne({ googleId: sub });
+  
+      if (!user) {
+        // 3. Nếu chưa, tạo user mới
+        user = await UserModel.create({
+          name,
+          email,
+          googleId: sub,
+          avatar: picture,
+          verify_email: true,
+          last_login_date: new Date(),
+        });
+        await user.save();
+      } else {
+        // 4. Nếu đã có, cập nhật avatar + ngày đăng nhập
+        user.avatar = picture;
+        user.last_login_date = new Date();
+        await user.save();
+      }
+      const accesstoken = await generatedAccessToken(user._id)
+      const refreshToken = await genertedRefreshToken(user._id)
+      
+
+      const cookiesOption = {
+          httpOnly : true,
+          secure : true,
+          sameSite : "None"
+      }
+      res.cookie('accessToken',accesstoken,cookiesOption)
+      res.cookie('refreshToken',refreshToken,cookiesOption)
+      // 5. Trả về token hoặc user info tuỳ bạn
+      res.json({
+        success: true,
+        message: "Đăng nhập Google thành công",
+        user,
+      });
+    } catch (error) {
+      console.error("Google Login Error:", error);
+      res.status(401).json({ success: false, message: "Xác thực Google thất bại" });
+    }
+  };

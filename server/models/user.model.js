@@ -12,7 +12,9 @@ const userSchema = new mongoose.Schema({
     },
     password: {
         type: String,
-        required: [true, "Provide password"]
+        required: function () {
+            return !this.googleId; 
+          },
     },
     avatar: {
         type: String,
@@ -79,6 +81,11 @@ const userSchema = new mongoose.Schema({
     publish : {
         type: Boolean,
         default: true
+    },
+    googleId: {
+        type: String,
+        default: null,
+        unique: true,
     }
 }, {
     timestamps: true

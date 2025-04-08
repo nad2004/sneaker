@@ -19,6 +19,8 @@ import chatRouter from './route/chat.route.js'
 import conversationRouter from './route/conversation.route.js'
 import handleMessage from './utils/message.js'
 import messageRouter from './route/message.route.js'
+import cron from "node-cron";
+import cancelExpiredOrders from "./utils/cronJob.js";
 const app = express()
 const wsServer = http.createServer();
 
@@ -54,6 +56,10 @@ app.use('/api/payment',paymentRoute)
 app.use('/api/chat',chatRouter)
 app.use('/api/conversation',conversationRouter)
 app.use('/api/message',messageRouter)
+cron.schedule("* * * * *", async () => {
+    console.log("⏳ Đang kiểm tra đơn hàng hết hạn...");
+    await cancelExpiredOrders();
+})
 connectDB().then(()=>{
     app.listen(PORT,()=>{
         console.log("Server is running",PORT)

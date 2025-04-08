@@ -13,7 +13,7 @@ const __dirname = path.dirname(__filename);
 export async function createNewOrderController(request, response) {
     const session = await mongoose.startSession();
     session.startTransaction();
-    
+
     try {
         const { userId, products, totalAmt, payment_method, delivery_address } = request.body;
 
@@ -24,27 +24,33 @@ export async function createNewOrderController(request, response) {
                 success: false,
             });
         }
-        let payment_status =  "Pending";
+
+        // Đặt trạng thái thanh toán ban đầu
+        let payment_status = "Pending";
         if (payment_method === "USING DEBIT CARD") {
-            payment_status = "Success"
+            payment_status = "Pending"; // Đợi xác nhận từ VNPay
+        } else {
+            payment_status = "Success"; // COD chẳng hạn
         }
-        // Tạo payload cho order
+
         const orderPayload = {
             userId,
-            orderId: `ORD-${new Date().getTime()}`, // Tạo orderId dựa trên timestamp để đảm bảo duy nhất
+            orderId: `ORD-${Date.now()}`,
             products,
-            payment_method: payment_method,
-            payment_status: payment_status,
+            payment_method,
+            payment_status,
             delivery_status: "OrderMade",
             delivery_address: delivery_address || "",
             subTotalAmt: totalAmt,
             totalAmt,
+            createdAt: new Date(),
+            expiresAt: new Date(Date.now() + 2 * 60 * 1000), // Tự huỷ sau 2 phút
         };
 
-        // Tạo đơn hàng
         const createdOrder = await OrderModel.create([orderPayload], { session });
+        const orderId = createdOrder[0]._id;
 
-        // Giảm stock sản phẩm trong transaction
+        // Trừ tồn kho
         for (let item of products) {
             await ProductModel.findByIdAndUpdate(
                 item.productId,
@@ -53,11 +59,11 @@ export async function createNewOrderController(request, response) {
             );
         }
 
-        // Xóa giỏ hàng của user trong transaction
+        // Xoá giỏ hàng
         await CartProductModel.deleteMany({ userId }, { session });
         await UserModel.updateOne({ _id: userId }, { shopping_cart: [] }, { session });
+        await UserModel.updateOne({ _id: userId }, { $push: { orderHistory: orderId } }, { session });
 
-        // Commit transaction
         await session.commitTransaction();
         session.endSession();
 
@@ -69,7 +75,6 @@ export async function createNewOrderController(request, response) {
         });
 
     } catch (error) {
-        // Rollback transaction nếu có lỗi
         await session.abortTransaction();
         session.endSession();
         return response.status(500).json({
@@ -79,10 +84,10 @@ export async function createNewOrderController(request, response) {
         });
     }
 }
+
 export async function getOrderDetailsbyUserController(request, response) {
     try {
-        const userId = request.userId;
-
+        const {userId} = request.body;
         const orderList = await OrderModel.find({ userId: userId })
             .sort({ createdAt: -1 })
             .populate("products.productId");
@@ -232,7 +237,7 @@ export const deleteOrderDetails = async (request, response) => {
                 { session }
             );
         }
-
+    
         // Xóa đơn hàng
         const deleteOrder = await OrderModel.deleteOne({ _id }).session(session);
 

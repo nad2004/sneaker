@@ -62,11 +62,13 @@ const OrderPage = () => {
           setComment("");
       };
   const fetchOrders = async (userId: string) => {
+    console.log(userId);
     try {
       const response = await axios.post(
         "http://localhost:8080/api/order/order-list",
         { userId }, {withCredentials: true }
       );
+      console.log(response.data.data);
       setOrders(response.data.data);
     } catch (error) {
       console.error("Error fetching orders:", error);

@@ -59,6 +59,10 @@ const orderSchema = new mongoose.Schema(
       type: Boolean,
       default: true,
     },
+    expiresAt: {
+      type: Date,
+      default: () => new Date(Date.now() + 2 * 60 * 1000), // +2 phút kể từ khi tạo
+    },
   },
   {
     timestamps: true,
