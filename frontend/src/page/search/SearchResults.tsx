@@ -1,9 +1,9 @@
-import { useEffect, useState } from "react";
-import { useSearchParams, Link } from "react-router-dom";
-import { Pagination } from "@mui/material"; // Import Pagination
-import LeftsideBar from "../../components/Layout/LeftsideBar";
-import axios from "axios";
-import ProductRate from "../../components/ProductRate";
+import { useEffect, useState } from 'react';
+import { useSearchParams, Link } from 'react-router-dom';
+import { Pagination } from '@mui/material'; // Import Pagination
+import LeftsideBar from '../../components/Layout/LeftsideBar';
+import axios from 'axios';
+import ProductRate from '../../components/ProductRate';
 const SearchResults = ({ search }: { search: string }) => {
   const [products, setProducts] = useState<any[]>([]);
   const [searchParams] = useSearchParams();
@@ -12,11 +12,19 @@ const SearchResults = ({ search }: { search: string }) => {
 
   const fetchProducts = async (pageNumber = 1, minPrice: any, maxPrice: any, search: any) => {
     try {
-      const response = await axios.post("http://localhost:8080/api/product/get", {
-         page: pageNumber, limit: 12, search, minPrice, maxPrice   // Fetch 12 products per page
-      }, {withCredentials: true });
+      const response = await axios.post(
+        'http://localhost:8080/api/product/get',
+        {
+          page: pageNumber,
+          limit: 12,
+          search,
+          minPrice,
+          maxPrice, // Fetch 12 products per page
+        },
+        { withCredentials: true }
+      );
 
-      if (!response) throw new Error("Lỗi khi gọi API");
+      if (!response) throw new Error('Lỗi khi gọi API');
 
       const data = await response.data;
       if (data.success) {
@@ -28,16 +36,16 @@ const SearchResults = ({ search }: { search: string }) => {
         setTotalPages(data.totalNoPage);
       }
     } catch (error) {
-      console.error("Lỗi khi lấy danh sách sản phẩm:", error);
+      console.error('Lỗi khi lấy danh sách sản phẩm:', error);
     }
   };
 
   useEffect(() => {
-    const query = searchParams.get("query") || "";
-    const minPrice = searchParams.get("minPrice");
-    const maxPrice = searchParams.get("maxPrice");
-    const category = searchParams.get("brand");
-    const search = searchParams.get("search");
+    const query = searchParams.get('query') || '';
+    const minPrice = searchParams.get('minPrice');
+    const maxPrice = searchParams.get('maxPrice');
+    const category = searchParams.get('brand');
+    const search = searchParams.get('search');
 
     const requestBody = {
       page,
@@ -46,15 +54,15 @@ const SearchResults = ({ search }: { search: string }) => {
       query: query,
       minPrice: minPrice ? parseInt(minPrice) : 0,
       maxPrice: maxPrice ? parseInt(maxPrice) : 10000000,
-      category: category !== "Tất cả sản phẩm" ? category : undefined,
+      category: category !== 'Tất cả sản phẩm' ? category : undefined,
     };
     console.log(requestBody);
-    if (requestBody.query === "") {
+    if (requestBody.query === '') {
       fetchProducts(page, minPrice, maxPrice, search);
     } else {
-      fetch("http://localhost:8080/api/product/get-product-by-category", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+      fetch('http://localhost:8080/api/product/get-product-by-category', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(requestBody),
       })
         .then((res) => res.json())
@@ -67,7 +75,7 @@ const SearchResults = ({ search }: { search: string }) => {
             setTotalPages(1);
           }
         })
-        .catch((error) => console.error("Lỗi khi tìm kiếm sản phẩm:", error));
+        .catch((error) => console.error('Lỗi khi tìm kiếm sản phẩm:', error));
     }
   }, [searchParams, search, page]);
 
@@ -104,19 +112,17 @@ const SearchResults = ({ search }: { search: string }) => {
                     />
                     <div className="mt-2">
                       <h3 className="font-bold text-lg truncate">{product.name}</h3>
-                      <ProductRate productId = {product.id} />
+                      <ProductRate productId={product.id} />
                       <p className="text-red-500 font-bold mt-2 text-right">
                         {product.price.toLocaleString()} đ
                       </p>
                       {product.status && (
                         <p
                           className={`text-sm mt-2 ${
-                            product.status === "In Stock"
-                              ? "text-green-500"
-                              : "text-yellow-500"
+                            product.status === 'In Stock' ? 'text-green-500' : 'text-yellow-500'
                           }`}
                         >
-                          {product.status === "In Stock" ? "Còn hàng" : "Giảm giá"}
+                          {product.status === 'In Stock' ? 'Còn hàng' : 'Giảm giá'}
                         </p>
                       )}
                     </div>
@@ -127,7 +133,12 @@ const SearchResults = ({ search }: { search: string }) => {
           </div>
 
           <div className="flex justify-center mt-6">
-            <Pagination count={totalPages} page={page} onChange={handlePageChange} color="primary" />
+            <Pagination
+              count={totalPages}
+              page={page}
+              onChange={handlePageChange}
+              color="primary"
+            />
           </div>
         </main>
       </div>

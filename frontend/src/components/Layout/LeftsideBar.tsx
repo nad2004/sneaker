@@ -1,6 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Slider, TextField, Box, Typography, Button, Radio, RadioGroup, FormControlLabel, FormControl, FormLabel } from '@mui/material';
+import {
+  Slider,
+  TextField,
+  Box,
+  Typography,
+  Button,
+  Radio,
+  RadioGroup,
+  FormControlLabel,
+  FormControl,
+  FormLabel,
+} from '@mui/material';
 import axios from 'axios';
 const LeftsideBar = () => {
   const [priceRange, setPriceRange] = useState<number[]>([0, 10000000]);
@@ -11,14 +22,17 @@ const LeftsideBar = () => {
     try {
       const response = await axios.post('http://localhost:8080/api/category/get');
       const data = response.data.data;
-      setCategorys([{ name: "Tất cả sản phẩm", id: "" }, ...data.map((category: any) => ({ name: category.name, id: category._id }))]);
+      setCategorys([
+        { name: 'Tất cả sản phẩm', id: '' },
+        ...data.map((category: any) => ({ name: category.name, id: category._id })),
+      ]);
     } catch (error) {
       console.error('Error fetching categorys:', error);
     }
-  }
+  };
   useEffect(() => {
     fetchCategorys();
-  },[]);
+  }, []);
   const handleBrandChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const brand = event.target.value;
     setSelectedBrand(brand);
@@ -35,15 +49,13 @@ const LeftsideBar = () => {
     setPriceRange(newValue as number[]);
   };
 
- 
-
   const handleFilter = () => {
     const queryParams = new URLSearchParams({
       minPrice: priceRange[0].toString(),
       maxPrice: priceRange[1].toString(),
       category: selectedBrand,
     });
-    setSelectedBrand("");
+    setSelectedBrand('');
     navigate(`/search-product?${queryParams.toString()}`);
   };
 

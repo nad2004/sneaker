@@ -1,16 +1,26 @@
-import React, { useState, useEffect } from "react";
-import { Button, TextField, Avatar, Card, CardContent, Dialog, DialogTitle, DialogContent, DialogActions } from "@mui/material";
-import { styled } from "@mui/material/styles";
-import axios from "axios";
-import { Link } from "react-router-dom";
+import React, { useState, useEffect } from 'react';
+import {
+  Button,
+  TextField,
+  Avatar,
+  Card,
+  CardContent,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+} from '@mui/material';
+import { styled } from '@mui/material/styles';
+import axios from 'axios';
+import { Link } from 'react-router-dom';
 
-const VisuallyHiddenInput = styled("input")({
-  clip: "rect(0 0 0 0)",
-  clipPath: "inset(50%)",
+const VisuallyHiddenInput = styled('input')({
+  clip: 'rect(0 0 0 0)',
+  clipPath: 'inset(50%)',
   height: 1,
-  overflow: "hidden",
-  position: "absolute",
-  whiteSpace: "nowrap",
+  overflow: 'hidden',
+  position: 'absolute',
+  whiteSpace: 'nowrap',
   width: 1,
 });
 
@@ -26,120 +36,136 @@ interface User {
 
 const Profile = () => {
   const [user, setUser] = useState<User>();
-  const [userName, setUserName] = useState("");
-  const [userEmail, setUserEmail] = useState("");
-  const [phoneNumber, setPhoneNumber] = useState("");
-  const [address, setAddress] = useState("");
+  const [userName, setUserName] = useState('');
+  const [userEmail, setUserEmail] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const [address, setAddress] = useState('');
   const [openVerifyOtp, setOpenVerifyOtp] = useState(false);
   const [openChangePassword, setOpenChangePassword] = useState(false);
-  const [newPassword, setNewPassword] = useState("");
-   const [otp, setOtp] = useState("");
-    const [error, setError] = useState<string | null>(null);
+  const [newPassword, setNewPassword] = useState('');
+  const [otp, setOtp] = useState('');
+  const [error, setError] = useState<string | null>(null);
   useEffect(() => {
-    const storedUser = localStorage.getItem("user");
+    const storedUser = localStorage.getItem('user');
     const user = storedUser ? JSON.parse(storedUser) : null;
     if (storedUser) setUser(JSON.parse(storedUser));
-    setUserName(user?.name || ""); 
-    setUserEmail(user?.email || ""); 
-    setPhoneNumber(user?.mobile || ""); 
-    setAddress(user?.address_details || ""); 
+    setUserName(user?.name || '');
+    setUserEmail(user?.email || '');
+    setPhoneNumber(user?.mobile || '');
+    setAddress(user?.address_details || '');
   }, []);
   const handleOpenVerifyOtp = async () => {
     setError(null);
     try {
-      await axios.put("http://localhost:8080/api/user/forgot-password", { email: user?.email });
+      await axios.put('http://localhost:8080/api/user/forgot-password', { email: user?.email });
       setOpenVerifyOtp(true);
     } catch (err: any) {
-      alert(err.response.data.message)
-      setError(err.response?.data?.message || "err");
+      alert(err.response.data.message);
+      setError(err.response?.data?.message || 'err');
     }
   };
   const handleVerifyOtp = async (event: React.FormEvent) => {
     event.preventDefault();
     setError(null);
     try {
-       await axios.put("http://localhost:8080/api/user/verify-forgot-password-otp", { email: user?.email, otp });
+      await axios.put('http://localhost:8080/api/user/verify-forgot-password-otp', {
+        email: user?.email,
+        otp,
+      });
       setOpenVerifyOtp(false);
-      setOtp("");
+      setOtp('');
       setOpenChangePassword(true);
     } catch (err: any) {
-      alert(err.response.data.message)
-      setError(err.response?.data?.message || "Invalid OTP");
+      alert(err.response.data.message);
+      setError(err.response?.data?.message || 'Invalid OTP');
     }
   };
   const handleChangePassword = async (event: React.FormEvent) => {
     event.preventDefault();
     setError(null);
     try {
-      const response = await axios.put("http://localhost:8080/api/user/reset-password", { email: user?.email, newPassword });
+      const response = await axios.put('http://localhost:8080/api/user/reset-password', {
+        email: user?.email,
+        newPassword,
+      });
       if (response.data.success) {
-        alert("Đổi mật khẩu thành công!");
+        alert('Đổi mật khẩu thành công!');
         setOpenChangePassword(false);
-        setNewPassword("");
+        setNewPassword('');
       } else {
-        throw new Error(response.data.message || "Lỗi không xác định");
+        throw new Error(response.data.message || 'Lỗi không xác định');
       }
     } catch (err) {
-      console.error("Lỗi khi đổi mật khẩu:", err);
-      alert("Đổi mật khẩu thất bại! Vui lòng thử lại.");
+      console.error('Lỗi khi đổi mật khẩu:', err);
+      alert('Đổi mật khẩu thất bại! Vui lòng thử lại.');
     }
   };
   const handlePhotoChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
-    
-    try {
-        const formData = new FormData();
-        formData.append("image", file);
-        formData.append("userId", user?._id || "");
 
-        const response = await axios.put("http://localhost:8080/api/user/upload-avatar", formData, {
-           withCredentials: true 
-        });
-        
-        if (response.data.success) {
-            alert("Cập nhật ảnh đại diện thành công!");
-            setUser((prevUser) => prevUser ? { ...prevUser, avatar: response.data.data.avatar } : prevUser);
-            localStorage.setItem("user", JSON.stringify({ 
-                ...JSON.parse(localStorage.getItem("user") || "{}"), 
-                avatar: response.data.data.avatar 
-            }));
-            window.location.reload();
-        } else {
-            throw new Error(response.data.message || "Lỗi không xác định");
-        }
+    try {
+      const formData = new FormData();
+      formData.append('image', file);
+      formData.append('userId', user?._id || '');
+
+      const response = await axios.put('http://localhost:8080/api/user/upload-avatar', formData, {
+        withCredentials: true,
+      });
+
+      if (response.data.success) {
+        alert('Cập nhật ảnh đại diện thành công!');
+        setUser((prevUser) =>
+          prevUser ? { ...prevUser, avatar: response.data.data.avatar } : prevUser
+        );
+        localStorage.setItem(
+          'user',
+          JSON.stringify({
+            ...JSON.parse(localStorage.getItem('user') || '{}'),
+            avatar: response.data.data.avatar,
+          })
+        );
+        window.location.reload();
+      } else {
+        throw new Error(response.data.message || 'Lỗi không xác định');
+      }
     } catch (err) {
-        console.error("Lỗi khi tải ảnh lên:", err);
-        alert("Tải ảnh thất bại! Vui lòng thử lại.");
+      console.error('Lỗi khi tải ảnh lên:', err);
+      alert('Tải ảnh thất bại! Vui lòng thử lại.');
     }
   };
 
   const handleSaveChanges = async () => {
     try {
-      const response = await axios.put("http://localhost:8080/api/user/update-profile", {
+      const response = await axios.put('http://localhost:8080/api/user/update-profile', {
         id: user?._id,
         phone: phoneNumber,
         address: address,
-        name: userName, 
-        email: userEmail
+        name: userName,
+        email: userEmail,
       });
-  
+
       if (response.data.success) {
-        alert("Thay đổi thành công!");
-        
+        alert('Thay đổi thành công!');
+
         setUser((prevUser) => {
           if (!prevUser) return prevUser;
-          const updatedUser = { ...prevUser, mobile: phoneNumber, address, name: userName, email: userEmail};
-          localStorage.setItem("user", JSON.stringify(updatedUser)); 
+          const updatedUser = {
+            ...prevUser,
+            mobile: phoneNumber,
+            address,
+            name: userName,
+            email: userEmail,
+          };
+          localStorage.setItem('user', JSON.stringify(updatedUser));
           return updatedUser;
         });
-  
       } else {
-        throw new Error(response.data.message || "Lỗi không xác định");
+        throw new Error(response.data.message || 'Lỗi không xác định');
       }
     } catch (err) {
-      console.error("Failed to update profile:", err);
-      alert("Cập nhật thất bại! Vui lòng thử lại.");
+      console.error('Failed to update profile:', err);
+      alert('Cập nhật thất bại! Vui lòng thử lại.');
     }
   };
 
@@ -163,7 +189,7 @@ const Profile = () => {
             <div className="relative">
               <div className="w-full h-64 bg-gradient-to-r from-blue-300 to-yellow-100 rounded-t-lg flex flex-col items-center -mt-1">
                 <Avatar
-                  src={user?.avatar || "/cover-images/default-avatar.jpg"}
+                  src={user?.avatar || '/cover-images/default-avatar.jpg'}
                   className="!w-28 !h-28 border-4 border-white shadow-md !mt-4"
                 />
                 <label className="mt-2">
@@ -179,43 +205,87 @@ const Profile = () => {
 
             {/* Form nhập thông tin */}
             <div className="mt-6 space-y-4">
-              <TextField fullWidth label="Name" variant="outlined" value={userName} onChange={(e) => setUserName(e.target.value)} />
-              <TextField fullWidth label="Email" variant="outlined" value={userEmail} onChange={(e) => setUserEmail(e.target.value)} />
-              <TextField fullWidth label="Phone Number" variant="outlined" value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} />
-              <TextField fullWidth label="Address" variant="outlined" value={address} onChange={(e) => setAddress(e.target.value)} />
-              
+              <TextField
+                fullWidth
+                label="Name"
+                variant="outlined"
+                value={userName}
+                onChange={(e) => setUserName(e.target.value)}
+              />
+              <TextField
+                fullWidth
+                label="Email"
+                variant="outlined"
+                value={userEmail}
+                onChange={(e) => setUserEmail(e.target.value)}
+              />
+              <TextField
+                fullWidth
+                label="Phone Number"
+                variant="outlined"
+                value={phoneNumber}
+                onChange={(e) => setPhoneNumber(e.target.value)}
+              />
+              <TextField
+                fullWidth
+                label="Address"
+                variant="outlined"
+                value={address}
+                onChange={(e) => setAddress(e.target.value)}
+              />
             </div>
 
             {/* Nút Save */}
             <div className="grid grid-cols-2 gap-6 mt-6">
-            <Button onClick={handleOpenVerifyOtp} variant="contained" color="secondary" fullWidth>
+              <Button onClick={handleOpenVerifyOtp} variant="contained" color="secondary" fullWidth>
                 Change Password
               </Button>
               <Button onClick={handleSaveChanges} variant="contained" color="primary" fullWidth>
                 Save Changes
               </Button>
-            </div>             
+            </div>
           </CardContent>
         </Card>
       </div>
       <Dialog open={openVerifyOtp} onClose={() => setOpenVerifyOtp(false)}>
         <DialogTitle>Verify OTP</DialogTitle>
         <DialogContent>
-          <TextField label="Enter OTP" fullWidth variant="outlined" value={otp} onChange={(e) => setOtp(e.target.value)} />
+          <TextField
+            label="Enter OTP"
+            fullWidth
+            variant="outlined"
+            value={otp}
+            onChange={(e) => setOtp(e.target.value)}
+          />
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setOpenVerifyOtp(false)} color="secondary">Cancel</Button>
-          <Button onClick={handleVerifyOtp} color="primary" variant="contained">Verify OTP</Button>
+          <Button onClick={() => setOpenVerifyOtp(false)} color="secondary">
+            Cancel
+          </Button>
+          <Button onClick={handleVerifyOtp} color="primary" variant="contained">
+            Verify OTP
+          </Button>
         </DialogActions>
       </Dialog>
       <Dialog open={openChangePassword} onClose={() => setOpenChangePassword(false)}>
         <DialogTitle>Change Password</DialogTitle>
         <DialogContent>
-          <TextField label="New Password" type="password" fullWidth variant="outlined" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} />
+          <TextField
+            label="New Password"
+            type="password"
+            fullWidth
+            variant="outlined"
+            value={newPassword}
+            onChange={(e) => setNewPassword(e.target.value)}
+          />
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setOpenChangePassword(false)} color="secondary">Cancel</Button>
-          <Button onClick={handleChangePassword} color="primary" variant="contained">Change Password</Button>
+          <Button onClick={() => setOpenChangePassword(false)} color="secondary">
+            Cancel
+          </Button>
+          <Button onClick={handleChangePassword} color="primary" variant="contained">
+            Change Password
+          </Button>
         </DialogActions>
       </Dialog>
     </div>

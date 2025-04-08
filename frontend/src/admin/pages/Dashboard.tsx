@@ -1,6 +1,6 @@
-import { Card, Typography, Box } from "@mui/material";
-import { Grid } from "@mui/material";
-import { Title } from "react-admin";
+import { Card, Typography, Box } from '@mui/material';
+import { Grid } from '@mui/material';
+import { Title } from 'react-admin';
 import {
   BarChart,
   Bar,
@@ -10,10 +10,10 @@ import {
   ResponsiveContainer,
   Tooltip,
   Legend,
-} from "recharts";
-import { useEffect, useState } from "react";
-import axios from "axios";
-import dayjs from "dayjs"; // npm install dayjs
+} from 'recharts';
+import { useEffect, useState } from 'react';
+import axios from 'axios';
+import dayjs from 'dayjs'; // npm install dayjs
 
 const Dashboard = () => {
   const [orders, setOrders] = useState([]);
@@ -24,18 +24,18 @@ const Dashboard = () => {
 
   const fetchOrder = async () => {
     try {
-      const response = await axios.get("http://localhost:8080/api/order/get-order-list");
-      const Userresponse = await axios.post("http://localhost:8080/api/user/get");
-      
+      const response = await axios.get('http://localhost:8080/api/order/get-order-list');
+      const Userresponse = await axios.post('http://localhost:8080/api/user/get');
+
       const orderData = response.data.data;
       setOrders(orderData);
-      setUsers(Userresponse.data.data)
-      
-      setCustomerCount(Userresponse.data.data.filter(user => user.role === "CUSTOMER").length);
+      setUsers(Userresponse.data.data);
+
+      setCustomerCount(Userresponse.data.data.filter((user) => user.role === 'CUSTOMER').length);
       // Tính toán Total Earning
-      
+
       const totalEarning = orderData.reduce((sum: number, order: any) => {
-        if (order.delivery_status === "Complete") {
+        if (order.delivery_status === 'Complete') {
           return sum + (order.totalAmt || 0);
         }
         return sum; // Quan trọng! Giữ nguyên tổng nếu điều kiện không đúng
@@ -45,7 +45,7 @@ const Dashboard = () => {
 
       // Xử lý dữ liệu biểu đồ: Nhóm theo ngày hoặc tháng
       const groupedData = orderData.reduce((acc, order) => {
-        const date = dayjs(order.createdAt).format("MMM D"); // "Mar 25"
+        const date = dayjs(order.createdAt).format('MMM D'); // "Mar 25"
         if (!acc[date]) acc[date] = { date, revenue: 0, orders: 0, customers: 0 };
 
         acc[date].revenue += order.totalAmt || 0;
@@ -57,7 +57,7 @@ const Dashboard = () => {
 
       // Convert object thành array & sort theo thời gian
       const sortedData = Object.values(groupedData).sort((a, b) =>
-        dayjs(a.date, "MMM D").isBefore(dayjs(b.date, "MMM D")) ? -1 : 1
+        dayjs(a.date, 'MMM D').isBefore(dayjs(b.date, 'MMM D')) ? -1 : 1
       );
 
       setChartData(sortedData);
@@ -81,38 +81,35 @@ const Dashboard = () => {
 
         <Grid container spacing={3} sx={{ mb: 4 }}>
           <Grid item xs={12} md={4}>
-            <Card sx={{ p: 2, textAlign: "center", borderRadius: 2 }}>
+            <Card sx={{ p: 2, textAlign: 'center', borderRadius: 2 }}>
               <Typography variant="subtitle2" color="textSecondary">
                 Revenue
               </Typography>
               <Typography variant="h4" fontWeight="bold">
                 ${totalEarning.toLocaleString()}
               </Typography>
-              
             </Card>
           </Grid>
 
           <Grid item xs={12} md={4}>
-            <Card sx={{ p: 2, textAlign: "center", borderRadius: 2 }}>
+            <Card sx={{ p: 2, textAlign: 'center', borderRadius: 2 }}>
               <Typography variant="subtitle2" color="textSecondary">
                 Orders
               </Typography>
               <Typography variant="h4" fontWeight="bold">
                 {orders.length}
               </Typography>
-             
             </Card>
           </Grid>
 
           <Grid item xs={12} md={4}>
-            <Card sx={{ p: 2, textAlign: "center", borderRadius: 2 }}>
+            <Card sx={{ p: 2, textAlign: 'center', borderRadius: 2 }}>
               <Typography variant="subtitle2" color="textSecondary">
                 Customers
               </Typography>
               <Typography variant="h4" fontWeight="bold">
                 {customerCount}
               </Typography>
-             
             </Card>
           </Grid>
         </Grid>

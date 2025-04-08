@@ -1,6 +1,5 @@
-import React from "react";
-import { FaFacebook, FaInstagram, FaLinkedin, FaRegEnvelope } from "react-icons/fa";
-
+import React from 'react';
+import { FaFacebook, FaInstagram, FaLinkedin, FaRegEnvelope } from 'react-icons/fa';
 
 const Footer: React.FC = () => {
   return (
@@ -86,8 +85,6 @@ const Footer: React.FC = () => {
 
       {/* Download App & Social Media */}
       <div className="border-t border-gray-300 py-6 px-4 flex flex-col md:flex-row items-center justify-between max-w-6xl mx-auto">
-        
-        
         {/* Social Media */}
         <div className="flex gap-4 mt-4 md:mt-0">
           <a href="#" className="text-gray-600 hover:text-blue-600 text-xl">
@@ -105,13 +102,14 @@ const Footer: React.FC = () => {
       {/* Footer Bottom */}
       <div className="border-t border-gray-300 py-4 px-4 text-center text-xs text-gray-500">
         <p>Copyright 2024 © Jinstore WooCommerce WordPress Theme. All rights reserved.</p>
-        <p>Powered by <span className="text-blue-600">BlackRise Themes</span>.</p>
+        <p>
+          Powered by <span className="text-blue-600">BlackRise Themes</span>.
+        </p>
         <div className="flex justify-center gap-4 mt-2">
           <span>Terms and Conditions</span>
           <span>Privacy Policy</span>
           <span>Order Tracking</span>
         </div>
-        
       </div>
     </footer>
   );

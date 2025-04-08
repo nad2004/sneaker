@@ -1,15 +1,15 @@
-import React, { useState, useEffect } from "react";
-import { useNavigate, useLocation, useParams  } from "react-router-dom";
-import axios from "axios";
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useLocation, useParams } from 'react-router-dom';
+import axios from 'axios';
 
 const VerifyOtp: React.FC = () => {
-  const userId = useParams().userId; 
+  const userId = useParams().userId;
   const location = useLocation();
   const email = location.state;
-  const [otp, setOtp] = useState("");
+  const [otp, setOtp] = useState('');
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
-console.log(userId)
+  console.log(userId);
   useEffect(() => {
     // 🔥 Nếu không nhập OTP trong vòng 1 phút => Xóa tài khoản
     const timer = setTimeout(async () => {
@@ -17,10 +17,10 @@ console.log(userId)
         await axios.delete(`http://localhost:8080/api/user/delete-user`, {
           data: { _id: userId },
         });
-        console.log("❌ Tài khoản bị xóa do không nhập OTP");
-        navigate("/register");
+        console.log('❌ Tài khoản bị xóa do không nhập OTP');
+        navigate('/register');
       } catch (err) {
-        console.error("Lỗi khi xóa tài khoản:", err);
+        console.error('Lỗi khi xóa tài khoản:', err);
       }
     }, 60000); // 60 giây = 1 phút
 
@@ -32,16 +32,16 @@ console.log(userId)
     setError(null);
 
     try {
-      const response = await axios.post("http://localhost:8080/api/user/verify-email", {
+      const response = await axios.post('http://localhost:8080/api/user/verify-email', {
         email,
         otp,
       });
 
-      console.log("🟢 OTP Verified!", response.data);
-      navigate("/login"); // ✅ Điều hướng về trang chính sau khi xác minh thành công
+      console.log('🟢 OTP Verified!', response.data);
+      navigate('/login'); // ✅ Điều hướng về trang chính sau khi xác minh thành công
     } catch (err: any) {
-      console.error("❌ OTP verification failed", err);
-      setError(err.response?.data?.message || "Invalid OTP");
+      console.error('❌ OTP verification failed', err);
+      setError(err.response?.data?.message || 'Invalid OTP');
     }
   };
 
@@ -64,7 +64,10 @@ console.log(userId)
             />
           </div>
 
-          <button type="submit" className="w-full bg-purple-600 text-white py-2 rounded-md hover:bg-purple-700 transition duration-200">
+          <button
+            type="submit"
+            className="w-full bg-purple-600 text-white py-2 rounded-md hover:bg-purple-700 transition duration-200"
+          >
             Verify OTP
           </button>
         </form>

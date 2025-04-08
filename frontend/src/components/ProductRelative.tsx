@@ -1,10 +1,10 @@
 // ProductRelative.tsx
-import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
-import ProductRate from "./ProductRate";
-import axios from "axios";
+import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
+import ProductRate from './ProductRate';
+import axios from 'axios';
 interface Product {
-  _id: string;  // Đổi từ id -> _id
+  _id: string; // Đổi từ id -> _id
   name: string;
   price: string;
   image: string;
@@ -20,9 +20,8 @@ const ProductRelative: React.FC<{ currentProductId: string }> = ({ currentProduc
 
     const fetchProducts = async () => {
       try {
-        const response = await axios.post("http://localhost:8080/api/product/get", {
-        });
-      
+        const response = await axios.post('http://localhost:8080/api/product/get', {});
+
         if (!response) {
           throw new Error('Không thể tải danh sách sản phẩm');
         }
@@ -30,7 +29,9 @@ const ProductRelative: React.FC<{ currentProductId: string }> = ({ currentProduc
         const data = await response.data;
         if (data.success) {
           // Loại bỏ sản phẩm hiện tại khỏi danh sách
-          const filteredProducts = data.data.filter((product: Product) => product._id !== currentProductId);
+          const filteredProducts = data.data.filter(
+            (product: Product) => product._id !== currentProductId
+          );
           // Chọn ngẫu nhiên 4 sản phẩm từ danh sách còn lại
           const randomProducts = filteredProducts.sort(() => 0.5 - Math.random()).slice(0, 4);
 
@@ -66,30 +67,34 @@ const ProductRelative: React.FC<{ currentProductId: string }> = ({ currentProduc
 
   return (
     <div>
-    <h2 className="text-2xl font-bold mb-4">Sản phẩm liên quan</h2>
-    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
-      {products.map((product) => (
-        <div key={product._id} className="border p-4 rounded-lg flex flex-col h-full">
-          {/* Ảnh sản phẩm */}
-          <img src={product.image[0]} alt={product.name} className="w-full h-48  mb-4 !object-fill" />
-          
-          {/* Tên sản phẩm */}
-          <h3 className="text-xl font-semibold flex-grow">{product.name}</h3>
-          <ProductRate productId = {product._id} />
-          {/* Giá sản phẩm */}
-          <p className="text-lg text-red-500 font-semibold text-right">{product.price} VNĐ</p>
-          
-          {/* Nút xem chi tiết */}
-          <Link
-            to={`/product-details/${product._id}`}
-            className="block text-center mt-4 text-blue-500 border-t pt-2"
-          >
-            Xem chi tiết
-          </Link>
-        </div>
-      ))}
+      <h2 className="text-2xl font-bold mb-4">Sản phẩm liên quan</h2>
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
+        {products.map((product) => (
+          <div key={product._id} className="border p-4 rounded-lg flex flex-col h-full">
+            {/* Ảnh sản phẩm */}
+            <img
+              src={product.image[0]}
+              alt={product.name}
+              className="w-full h-48  mb-4 !object-fill"
+            />
+
+            {/* Tên sản phẩm */}
+            <h3 className="text-xl font-semibold flex-grow">{product.name}</h3>
+            <ProductRate productId={product._id} />
+            {/* Giá sản phẩm */}
+            <p className="text-lg text-red-500 font-semibold text-right">{product.price} VNĐ</p>
+
+            {/* Nút xem chi tiết */}
+            <Link
+              to={`/product-details/${product._id}`}
+              className="block text-center mt-4 text-blue-500 border-t pt-2"
+            >
+              Xem chi tiết
+            </Link>
+          </div>
+        ))}
+      </div>
     </div>
-  </div>
   );
 };
 

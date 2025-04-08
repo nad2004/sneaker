@@ -1,13 +1,13 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import axios from "axios";
-import { AiOutlineLoading3Quarters } from "react-icons/ai";
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import { AiOutlineLoading3Quarters } from 'react-icons/ai';
 
 const SignInPage: React.FC = () => {
   const [isRegister, setIsRegister] = useState(true);
-  const [username, setUsername] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<React.ReactNode>(null);
   const [loading, setLoading] = useState(false);
@@ -20,19 +20,19 @@ const SignInPage: React.FC = () => {
     setLoading(true);
 
     try {
-      const response = await axios.post("http://localhost:8080/api/user/register", {
+      const response = await axios.post('http://localhost:8080/api/user/register', {
         name: username,
         email,
         password,
       });
 
-      console.log("🟢 Registration successful!", response.data);
+      console.log('🟢 Registration successful!', response.data);
 
-    const userId = response.data.userId
-      navigate(`/verify-otp/${userId}`, {state: email});
+      const userId = response.data.userId;
+      navigate(`/verify-otp/${userId}`, { state: email });
     } catch (err: any) {
-      console.error("❌ Registration failed", err);
-      setError(err.response?.data?.message || "Registration failed");
+      console.error('❌ Registration failed', err);
+      setError(err.response?.data?.message || 'Registration failed');
     } finally {
       setLoading(false);
     }
@@ -45,22 +45,23 @@ const SignInPage: React.FC = () => {
           <button
             onClick={() => {
               setIsRegister(false);
-              navigate("/login");
+              navigate('/login');
             }}
-            className={`text-lg font-semibold ${!isRegister ? "text-black" : "text-gray-400"}`}
+            className={`text-lg font-semibold ${!isRegister ? 'text-black' : 'text-gray-400'}`}
           >
             Login
           </button>
           <button
             onClick={() => setIsRegister(true)}
-            className={`text-lg font-semibold ${isRegister ? "text-black" : "text-gray-400"}`}
+            className={`text-lg font-semibold ${isRegister ? 'text-black' : 'text-gray-400'}`}
           >
             Register
           </button>
         </div>
 
         <p className="text-center text-sm mb-4 text-gray-700">
-          There are many advantages to creating an account: the payment process is faster, shipment tracking is possible and much more.
+          There are many advantages to creating an account: the payment process is faster, shipment
+          tracking is possible and much more.
         </p>
 
         {error && <p className="text-red-500 text-sm text-center mb-2">{error}</p>}
@@ -99,15 +100,17 @@ const SignInPage: React.FC = () => {
           </div>
 
           <p className="text-xs text-gray-600">
-            Your personal data will be used to support your experience throughout this website, to manage access to your account, and for other purposes described in our <span className="text-purple-600 underline cursor-pointer">privacy policy</span>.
+            Your personal data will be used to support your experience throughout this website, to
+            manage access to your account, and for other purposes described in our{' '}
+            <span className="text-purple-600 underline cursor-pointer">privacy policy</span>.
           </p>
 
-          <button 
-            type="submit" 
+          <button
+            type="submit"
             className="w-full bg-purple-600 text-white py-2 rounded-md hover:bg-purple-700 transition duration-200 flex justify-center items-center"
             disabled={loading}
           >
-            {loading ? <AiOutlineLoading3Quarters className="animate-spin" /> : "Register"}
+            {loading ? <AiOutlineLoading3Quarters className="animate-spin" /> : 'Register'}
           </button>
         </form>
       </div>

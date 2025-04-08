@@ -1,31 +1,31 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { AiOutlineLoading3Quarters } from "react-icons/ai";
-import axios from "axios";
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { AiOutlineLoading3Quarters } from 'react-icons/ai';
+import axios from 'axios';
 const ForgotPasswordPage: React.FC = () => {
-  const [email, setEmail] = useState("");
-  const [error, setError] = useState("");
-  const [message, setMessage] = useState("");
+  const [email, setEmail] = useState('');
+  const [error, setError] = useState('');
+  const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError("");
-    setMessage("");
+    setError('');
+    setMessage('');
     setLoading(true);
     try {
-      const response = await axios.put("http://localhost:8080/api/user/forgot-password", {  email });
+      const response = await axios.put('http://localhost:8080/api/user/forgot-password', { email });
 
       const data = await response.data;
       if (!response) {
-        throw new Error(data.message || "Failed to send OTP");
+        throw new Error(data.message || 'Failed to send OTP');
       }
-      setMessage("OTP sent to your email. Please check your inbox.");
-      navigate("/verify-otppw", {state: email});
+      setMessage('OTP sent to your email. Please check your inbox.');
+      navigate('/verify-otppw', { state: email });
     } catch (err: any) {
       setError(err.message);
-    }finally {
+    } finally {
       setLoading(false);
     }
   };
@@ -39,20 +39,20 @@ const ForgotPasswordPage: React.FC = () => {
         <form onSubmit={handleSubmit} className="mt-4">
           <div className="mb-4">
             <label className="block text-gray-600 text-sm font-medium mb-1">Email</label>
-            <input 
-              type="email" 
-              className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500" 
-              value={email} 
+            <input
+              type="email"
+              className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+              value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
             />
           </div>
-          <button 
-            type="submit" 
+          <button
+            type="submit"
             className="w-full bg-purple-600 text-white py-2 rounded-md hover:bg-purple-700 transition duration-200"
             disabled={loading}
           >
-            {loading ? <AiOutlineLoading3Quarters className="animate-spin" /> : "Send OTP"}
+            {loading ? <AiOutlineLoading3Quarters className="animate-spin" /> : 'Send OTP'}
           </button>
         </form>
       </div>

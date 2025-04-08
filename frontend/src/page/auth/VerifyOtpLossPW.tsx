@@ -1,28 +1,31 @@
-import React, { useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
-import axios from "axios";
+import React, { useState } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import axios from 'axios';
 
 const VerifyOtp: React.FC = () => {
-    const location = useLocation(); // Lấy email từ trang trước đó để lưu vào biến email
-    const email = location.state;
-    const [otp, setOtp] = useState("");
-    const [error, setError] = useState<string | null>(null);
-    const navigate = useNavigate();
-const handleVerifyOtp = async (event: React.FormEvent) => {
+  const location = useLocation(); // Lấy email từ trang trước đó để lưu vào biến email
+  const email = location.state;
+  const [otp, setOtp] = useState('');
+  const [error, setError] = useState<string | null>(null);
+  const navigate = useNavigate();
+  const handleVerifyOtp = async (event: React.FormEvent) => {
     event.preventDefault();
     setError(null);
 
     try {
-      const response = await axios.put("http://localhost:8080/api/user/verify-forgot-password-otp", {
-        email,
-        otp,
-      });
+      const response = await axios.put(
+        'http://localhost:8080/api/user/verify-forgot-password-otp',
+        {
+          email,
+          otp,
+        }
+      );
 
-      console.log("🟢 OTP Verified!", response.data);
-      navigate("/reset-password", {state: email}); // 
+      console.log('🟢 OTP Verified!', response.data);
+      navigate('/reset-password', { state: email }); //
     } catch (err: any) {
-      console.error("❌ OTP verification failed", err);
-      setError(err.response?.data?.message || "Invalid OTP");
+      console.error('❌ OTP verification failed', err);
+      setError(err.response?.data?.message || 'Invalid OTP');
     }
   };
 
@@ -45,7 +48,10 @@ const handleVerifyOtp = async (event: React.FormEvent) => {
             />
           </div>
 
-          <button type="submit" className="w-full bg-purple-600 text-white py-2 rounded-md hover:bg-purple-700 transition duration-200">
+          <button
+            type="submit"
+            className="w-full bg-purple-600 text-white py-2 rounded-md hover:bg-purple-700 transition duration-200"
+          >
             Verify OTP
           </button>
         </form>

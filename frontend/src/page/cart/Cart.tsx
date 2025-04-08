@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 interface CartItem {
   _id: string;
   productId: {
@@ -21,10 +21,13 @@ const Cart: React.FC = () => {
   const navigate = useNavigate();
   // ✅ Lấy danh sách giỏ hàng từ API
   const fetchCart = async () => {
-    const userId = JSON.parse(localStorage.getItem("user") || "" )?._id;
+    const userId = JSON.parse(localStorage.getItem('user') || '')?._id;
     try {
-      const response = await axios.post("http://localhost:8080/api/cart/get", {userId}, 
-        { withCredentials: true });
+      const response = await axios.post(
+        'http://localhost:8080/api/cart/get',
+        { userId },
+        { withCredentials: true }
+      );
 
       const data = await response.data;
       console.log(userId);
@@ -35,13 +38,12 @@ const Cart: React.FC = () => {
         setCartItems([]);
       }
     } catch (error) {
-      console.error("Lỗi khi lấy giỏ hàng:", error);
+      console.error('Lỗi khi lấy giỏ hàng:', error);
       setCartItems([]);
     } finally {
       setLoading(false);
     }
   };
-  
 
   useEffect(() => {
     fetchCart();
@@ -52,18 +54,24 @@ const Cart: React.FC = () => {
     if (newQuantity < 1) return;
 
     try {
-      const response = await axios.put("http://localhost:8080/api/cart/update-qty", {
-    _id: itemId, qty: newQuantity }, { withCredentials: true });
+      const response = await axios.put(
+        'http://localhost:8080/api/cart/update-qty',
+        {
+          _id: itemId,
+          qty: newQuantity,
+        },
+        { withCredentials: true }
+      );
 
       const data = await response.data;
 
-      if (!response) throw new Error(data.message || "Cập nhật thất bại");
+      if (!response) throw new Error(data.message || 'Cập nhật thất bại');
 
       // 🔄 Sau khi cập nhật, gọi lại API để lấy dữ liệu mới nhất
       await fetchCart();
     } catch (error: any) {
-      alert("Cập nhật số lượng thất bại: " + error.message);
-      console.error("Lỗi khi cập nhật số lượng:", error);
+      alert('Cập nhật số lượng thất bại: ' + error.message);
+      console.error('Lỗi khi cập nhật số lượng:', error);
     }
   };
 
@@ -72,38 +80,36 @@ const Cart: React.FC = () => {
     try {
       const response = await axios({
         method: 'delete',
-        url: "http://localhost:8080/api/cart/delete-cart-item",
-        data: { _id: itemId, userId: JSON.parse(localStorage.getItem("user") || "")._id },  // Truyền dữ liệu vào body ở đây
-        withCredentials: true
+        url: 'http://localhost:8080/api/cart/delete-cart-item',
+        data: { _id: itemId, userId: JSON.parse(localStorage.getItem('user') || '')._id }, // Truyền dữ liệu vào body ở đây
+        withCredentials: true,
       });
-      
-      if (!response) throw new Error("Xóa sản phẩm thất bại");
+
+      if (!response) throw new Error('Xóa sản phẩm thất bại');
 
       // 🔄 Sau khi xóa, gọi lại API để lấy dữ liệu mới nhất
-      window.dispatchEvent(new Event("cartUpdated"));
+      window.dispatchEvent(new Event('cartUpdated'));
       await fetchCart();
     } catch (error) {
-      console.error("Lỗi khi xóa sản phẩm:", error);
+      console.error('Lỗi khi xóa sản phẩm:', error);
     }
   };
 
-  
   const handleOrder = async () => {
     const products = cartItems.map((item) => ({
       productId: item.productId._id,
       quantity: item.quantity,
-      size: item.size
+      size: item.size,
     }));
     const totalAmt = cartItems.reduce((sum, item) => {
-      const priceAfterDiscount =
-        item.productId.price * (1 - item.productId.discount / 100);
+      const priceAfterDiscount = item.productId.price * (1 - item.productId.discount / 100);
       return sum + priceAfterDiscount * item.quantity;
     }, 0);
     const OrderData = {
       products,
       totalAmt,
-    }
-    navigate("/checkout", {state: OrderData});
+    };
+    navigate('/checkout', { state: OrderData });
   };
   if (loading) return <div>Đang tải giỏ hàng...</div>;
 
@@ -111,8 +117,7 @@ const Cart: React.FC = () => {
 
   // 🔥 Tính tổng tiền
   const totalPrice = cartItems.reduce((sum, item) => {
-    const priceAfterDiscount =
-      item.productId.price * (1 - item.productId.discount / 100);
+    const priceAfterDiscount = item.productId.price * (1 - item.productId.discount / 100);
     return sum + priceAfterDiscount * item.quantity;
   }, 0);
 
@@ -122,30 +127,23 @@ const Cart: React.FC = () => {
       {cartItems.map((item) => (
         <div key={item._id} className="flex items-center border-b py-4">
           <img
-            src={item.productId.image[0]} 
+            src={item.productId.image[0]}
             alt={item.productId.name}
             className="w-24 h-24 object-cover mr-4"
           />
           <div className="flex-1">
             <h3 className="text-lg font-semibold">{item.productId.name}</h3>
             <p className="text-gray-600">
-              Giá:{" "}
+              Giá:{' '}
               <span className="text-red-500 font-bold">
-                {(item.productId.price * (1 - item.productId.discount / 100)).toFixed(2)}{" "}
-                VNĐ
+                {(item.productId.price * (1 - item.productId.discount / 100)).toFixed(2)} VNĐ
               </span>
               {item.productId.discount > 0 && (
-                <span className="text-gray-400 line-through ml-2">
-                  {item.productId.price} VNĐ
-                </span>
+                <span className="text-gray-400 line-through ml-2">{item.productId.price} VNĐ</span>
               )}
             </p>
             <p className="text-gray-800 font-bold">
-              Size:{" "}
-              <span>
-                {item.size}
-              </span>
-              
+              Size: <span>{item.size}</span>
             </p>
             {/* Nút tăng giảm số lượng */}
             <div className="flex items-center mt-2">
@@ -180,10 +178,7 @@ const Cart: React.FC = () => {
       {/* Tổng tiền */}
       <div className="mt-4 p-4 bg-gray-100 rounded">
         <p className="text-lg font-bold">Tổng tiền: {totalPrice.toFixed(2)} VNĐ</p>
-        <button
-          onClick={handleOrder}
-          className="bg-green-500 text-white px-4 py-2 mt-2 rounded"
-        >
+        <button onClick={handleOrder} className="bg-green-500 text-white px-4 py-2 mt-2 rounded">
           Đặt Hàng
         </button>
       </div>
