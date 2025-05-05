@@ -139,10 +139,7 @@ const ImageUploadField = () => {
     formData.append('image', file);
     formData.append('productId', record._id); // ✅ Thêm productId vào formData
     try {
-      const token = localStorage.getItem('accessToken');
-      const response = await axios.post('http://localhost:8080/api/file/upload', formData, {
-        headers: { 'Content-Type': 'multipart/form-data', Authorization: `Bearer ${token}` },
-      });
+      const response = await axios.post('http://localhost:8080/api/file/upload', formData, { withCredentials: true });
 
       console.log('Upload response:', response.data);
 
