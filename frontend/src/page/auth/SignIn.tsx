@@ -14,7 +14,7 @@ const AuthPage: React.FC = () => {
 
     try {
       const response = await axios.post(
-        'http://localhost:8080/api/user/login',
+        'https://sneaker-production.up.railway.app/api/user/login',
         { email, password },
         { withCredentials: true }
       );
@@ -31,7 +31,7 @@ const AuthPage: React.FC = () => {
   const handleGoogleLoginSuccess = async (credentialResponse: any) => {
     try {
       const res = await axios.post(
-        'http://localhost:8080/api/user/google-login',
+        'https://sneaker-production.up.railway.app/api/user/google-login',
         {
           credential: credentialResponse.credential,
         },

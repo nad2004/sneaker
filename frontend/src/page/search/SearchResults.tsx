@@ -13,7 +13,7 @@ const SearchResults = ({ search }: { search: string }) => {
   const fetchProducts = async (pageNumber = 1, minPrice: any, maxPrice: any, search: any) => {
     try {
       const response = await axios.post(
-        'http://localhost:8080/api/product/get',
+        'https://sneaker-production.up.railway.app/api/product/get',
         {
           page: pageNumber,
           limit: 12,
@@ -60,7 +60,7 @@ const SearchResults = ({ search }: { search: string }) => {
     if (requestBody.query === '') {
       fetchProducts(page, minPrice, maxPrice, search);
     } else {
-      fetch('http://localhost:8080/api/product/get-product-by-category', {
+      fetch('https://sneaker-production.up.railway.app/api/product/get-product-by-category', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(requestBody),

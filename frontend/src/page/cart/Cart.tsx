@@ -24,7 +24,7 @@ const Cart: React.FC = () => {
     const userId = JSON.parse(localStorage.getItem('user') || '')?._id;
     try {
       const response = await axios.post(
-        'http://localhost:8080/api/cart/get',
+        'https://sneaker-production.up.railway.app/api/cart/get',
         { userId },
         { withCredentials: true }
       );
@@ -55,7 +55,7 @@ const Cart: React.FC = () => {
 
     try {
       const response = await axios.put(
-        'http://localhost:8080/api/cart/update-qty',
+        'https://sneaker-production.up.railway.app/api/cart/update-qty',
         {
           _id: itemId,
           qty: newQuantity,
@@ -80,7 +80,7 @@ const Cart: React.FC = () => {
     try {
       const response = await axios({
         method: 'delete',
-        url: 'http://localhost:8080/api/cart/delete-cart-item',
+        url: 'https://sneaker-production.up.railway.app/api/cart/delete-cart-item',
         data: { _id: itemId, userId: JSON.parse(localStorage.getItem('user') || '')._id }, // Truyền dữ liệu vào body ở đây
         withCredentials: true,
       });

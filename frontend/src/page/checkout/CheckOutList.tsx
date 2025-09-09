@@ -76,7 +76,7 @@ const CheckOutList: React.FC = () => {
   const fetchProductDetails = async (productId: string) => {
     try {
       const response = await axios.post(
-        'http://localhost:8080/api/product/get-product-details',
+        'https://sneaker-production.up.railway.app/api/product/get-product-details',
         { id: productId },
         { withCredentials: true }
       );
@@ -161,10 +161,13 @@ const CheckOutList: React.FC = () => {
   const generateQR = async ({ orderId, amount }: { orderId: string; amount: number }) => {
     setLoading(true);
     try {
-      const response = await axios.post('http://localhost:8080/api/payment/vnpay-qr', {
-        orderId: orderId,
-        amount: amount,
-      });
+      const response = await axios.post(
+        'https://sneaker-production.up.railway.app/api/payment/vnpay-qr',
+        {
+          orderId: orderId,
+          amount: amount,
+        }
+      );
       setPaymentData(response.data);
       setLoading(false);
       setOpenPayment(true);
@@ -195,7 +198,7 @@ const CheckOutList: React.FC = () => {
     const delivery_address = form.address;
     try {
       const response = await axios.post(
-        'http://localhost:8080/api/order/create',
+        'https://sneaker-production.up.railway.app/api/order/create',
         {
           userId,
           products,

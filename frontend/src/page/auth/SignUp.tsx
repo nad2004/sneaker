@@ -20,11 +20,14 @@ const SignInPage: React.FC = () => {
     setLoading(true);
 
     try {
-      const response = await axios.post('http://localhost:8080/api/user/register', {
-        name: username,
-        email,
-        password,
-      });
+      const response = await axios.post(
+        'https://sneaker-production.up.railway.app/api/user/register',
+        {
+          name: username,
+          email,
+          password,
+        }
+      );
 
       console.log('🟢 Registration successful!', response.data);
 

@@ -14,7 +14,7 @@ const VerifyOtp: React.FC = () => {
     // 🔥 Nếu không nhập OTP trong vòng 1 phút => Xóa tài khoản
     const timer = setTimeout(async () => {
       try {
-        await axios.delete(`http://localhost:8080/api/user/delete-user`, {
+        await axios.delete(`https://sneaker-production.up.railway.app/api/user/delete-user`, {
           data: { _id: userId },
         });
         console.log('❌ Tài khoản bị xóa do không nhập OTP');
@@ -32,10 +32,13 @@ const VerifyOtp: React.FC = () => {
     setError(null);
 
     try {
-      const response = await axios.post('http://localhost:8080/api/user/verify-email', {
-        email,
-        otp,
-      });
+      const response = await axios.post(
+        'https://sneaker-production.up.railway.app/api/user/verify-email',
+        {
+          email,
+          otp,
+        }
+      );
 
       console.log('🟢 OTP Verified!', response.data);
       navigate('/login'); // ✅ Điều hướng về trang chính sau khi xác minh thành công

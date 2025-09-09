@@ -24,9 +24,12 @@ const OrderDetails = () => {
 
   const fetchOrderDetails = async () => {
     try {
-      const response = await axios.post('http://localhost:8080/api/order/get-order-details', {
-        id: orderId, // Gửi orderId trong body của request
-      });
+      const response = await axios.post(
+        'https://sneaker-production.up.railway.app/api/order/get-order-details',
+        {
+          id: orderId, // Gửi orderId trong body của request
+        }
+      );
       setOrder(response.data.data); // Lưu dữ liệu trả về vào state
     } catch (error) {
       console.error('Error fetching order details:', error);
@@ -36,7 +39,7 @@ const OrderDetails = () => {
     try {
       axios
         .post(
-          'http://localhost:8080/api/order/export-invoice',
+          'https://sneaker-production.up.railway.app/api/order/export-invoice',
           { orderId }, // Truyền vào body
           { responseType: 'blob' } // ⚠️ Cần để tải file PDF
         )
@@ -70,7 +73,7 @@ const OrderDetails = () => {
     }
     try {
       const response = axios.put(
-        'http://localhost:8080/api/order/update-order-status',
+        'https://sneaker-production.up.railway.app/api/order/update-order-status',
         { id: orderId, delivery_status: updateStatus, payment_status: updatePaymentStatus },
         { withCredentials: true }
       );

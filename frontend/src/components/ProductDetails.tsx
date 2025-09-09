@@ -29,9 +29,12 @@ const ProductDetails: React.FC = () => {
     // ✅ Nhận id làm tham số
     setLoading(true);
     try {
-      const response = await axios.post('http://localhost:8080/api/product/get-product-details', {
-        id, // ✅ Truyền id vào body
-      });
+      const response = await axios.post(
+        'https://sneaker-production.up.railway.app/api/product/get-product-details',
+        {
+          id, // ✅ Truyền id vào body
+        }
+      );
 
       if (!response) {
         throw new Error('Không thể tải dữ liệu sản phẩm');
@@ -76,7 +79,7 @@ const ProductDetails: React.FC = () => {
         size: selectedSize,
       });
       const response = await axios.post(
-        'http://localhost:8080/api/cart/create',
+        'https://sneaker-production.up.railway.app/api/cart/create',
         {
           userId: user?._id,
           productId: product._id,

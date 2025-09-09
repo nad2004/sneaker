@@ -163,7 +163,7 @@ const HomePage = () => {
   const fetchProducts = async () => {
     try {
       const response = await axios.post(
-        'http://localhost:8080/api/product/get',
+        'https://sneaker-production.up.railway.app/api/product/get',
         {
           limit: 50,
         },

@@ -15,7 +15,10 @@ const ForgotPasswordPage: React.FC = () => {
     setMessage('');
     setLoading(true);
     try {
-      const response = await axios.put('http://localhost:8080/api/user/forgot-password', { email });
+      const response = await axios.put(
+        'https://sneaker-production.up.railway.app/api/user/forgot-password',
+        { email }
+      );
 
       const data = await response.data;
       if (!response) {

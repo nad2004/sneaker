@@ -13,11 +13,14 @@ const ResetPasswordPage: React.FC = () => {
     setError('');
 
     try {
-      const response = await fetch('http://localhost:8080/api/user/reset-password', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, newPassword }),
-      });
+      const response = await fetch(
+        'https://sneaker-production.up.railway.app/api/user/reset-password',
+        {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, newPassword }),
+        }
+      );
 
       const data = await response.json();
       alert(data.message);

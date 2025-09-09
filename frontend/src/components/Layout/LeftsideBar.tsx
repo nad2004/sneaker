@@ -20,7 +20,9 @@ const LeftsideBar = () => {
   const navigate = useNavigate();
   const fetchCategorys = async () => {
     try {
-      const response = await axios.post('http://localhost:8080/api/category/get');
+      const response = await axios.post(
+        'https://sneaker-production.up.railway.app/api/category/get'
+      );
       const data = response.data.data;
       setCategorys([
         { name: 'Tất cả sản phẩm', id: '' },

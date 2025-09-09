@@ -35,7 +35,7 @@ const Chat = ({ onClose }) => {
     try {
       const user = JSON.parse(localStorage.getItem('user') || '{}');
       const response = await axios.post(
-        'http://localhost:8080/api/conversation/getconversationdetail',
+        'https://sneaker-production.up.railway.app/api/conversation/getconversationdetail',
         { senderId: user._id },
         { withCredentials: true }
       );
@@ -81,7 +81,7 @@ const Chat = ({ onClose }) => {
   const markMessagesRead = async (conversationId: string) => {
     try {
       await axios.post(
-        'http://localhost:8080/api/message/mark-read',
+        'https://sneaker-production.up.railway.app/api/message/mark-read',
         { conversationId, reader: 'user' }, // "user" hoặc "admin"
         { withCredentials: true }
       );
@@ -107,7 +107,7 @@ const Chat = ({ onClose }) => {
     });
     try {
       const response = axios.post(
-        'http://localhost:8080/api/message/create',
+        'https://sneaker-production.up.railway.app/api/message/create',
         { conversation: conversation._id, text: input, sender: 'user' },
         { withCredentials: true }
       );
@@ -126,7 +126,7 @@ const Chat = ({ onClose }) => {
   }, [messages]); // chạy mỗi khi danh sách messages thay đổi
   const recallMessage = async (messageId: string) => {
     try {
-      await axios.delete('http://localhost:8080/api/message/delete', {
+      await axios.delete('https://sneaker-production.up.railway.app/api/message/delete', {
         data: { messageId },
         withCredentials: true,
       });

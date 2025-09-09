@@ -26,7 +26,7 @@ const ProductList: React.FC<ProductListProps> = ({ search, setSearch }) => {
   const fetchProducts = async () => {
     try {
       const response = await axios.post(
-        'http://localhost:8080/api/product/get',
+        'https://sneaker-production.up.railway.app/api/product/get',
         {
           page,
           limit: 12, // Thay đổi limit để lấy 12 sản phẩm mỗi lần

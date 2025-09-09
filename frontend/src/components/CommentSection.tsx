@@ -42,7 +42,7 @@ const CommentSection: React.FC<{ productId: any }> = ({ productId }) => {
     }
     try {
       const reviewResponse = await axios.post(
-        'http://localhost:8080/api/review/get-review-product',
+        'https://sneaker-production.up.railway.app/api/review/get-review-product',
         { productId: productId }
       );
       console.log(reviewResponse.data);
@@ -62,10 +62,13 @@ const CommentSection: React.FC<{ productId: any }> = ({ productId }) => {
   const handleDelete = async (reviewId: string) => {
     try {
       const token = localStorage.getItem('accessToken');
-      const response = await axios.delete(`http://localhost:8080/api/review/delete`, {
-        data: { reviewId, userId: user?._id },
-        withCredentials: true,
-      });
+      const response = await axios.delete(
+        `https://sneaker-production.up.railway.app/api/review/delete`,
+        {
+          data: { reviewId, userId: user?._id },
+          withCredentials: true,
+        }
+      );
       alert('Comment deleted successfully!');
       handleMenuClose();
       window.location.reload();

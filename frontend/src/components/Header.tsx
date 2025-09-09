@@ -45,7 +45,7 @@ const Header: React.FC<HeaderProps> = ({ search, setSearch }) => {
     }
   }, [localStorage.getItem('user')]);
   const handleLogout = () => {
-    axios.get('http://localhost:8080/api/user/logout', {
+    axios.get('https://sneaker-production.up.railway.app/api/user/logout', {
       data: { userid: user?.id },
       withCredentials: true,
     });
@@ -62,9 +62,12 @@ const Header: React.FC<HeaderProps> = ({ search, setSearch }) => {
   const fetchProductOptions = async (input: string) => {
     try {
       setLoading(true);
-      const response = await axios.post('http://localhost:8080/api/product/search-product', {
-        search: input,
-      });
+      const response = await axios.post(
+        'https://sneaker-production.up.railway.app/api/product/search-product',
+        {
+          search: input,
+        }
+      );
       setProductOptions(response.data.data);
       setLoading(false);
     } catch (error) {
@@ -83,7 +86,7 @@ const Header: React.FC<HeaderProps> = ({ search, setSearch }) => {
     const updateCartCount = async () => {
       try {
         const response = await axios.post(
-          'http://localhost:8080/api/cart/get',
+          'https://sneaker-production.up.railway.app/api/cart/get',
           { userId: JSON.parse(localStorage.getItem('user') || '{}')._id },
           { withCredentials: true }
         );
@@ -108,7 +111,7 @@ const Header: React.FC<HeaderProps> = ({ search, setSearch }) => {
       try {
         const user = JSON.parse(localStorage.getItem('user') || '{}');
         const response = await axios.post(
-          'http://localhost:8080/api/conversation/getconversationdetail',
+          'https://sneaker-production.up.railway.app/api/conversation/getconversationdetail',
           { senderId: user._id },
           { withCredentials: true }
         );

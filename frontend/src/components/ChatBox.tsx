@@ -11,7 +11,9 @@ const ChatBox = ({ onClose }) => {
     setMessages(newMessages);
     setInput('');
     try {
-      const { data } = await axios.post('http://localhost:8080/api/chat', { message: input });
+      const { data } = await axios.post('https://sneaker-production.up.railway.app/api/chat', {
+        message: input,
+      });
       setMessages([...newMessages, { text: data.reply, sender: 'bot' }]);
     } catch (error) {
       console.error('Chat error:', error);

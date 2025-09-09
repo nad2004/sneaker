@@ -20,7 +20,10 @@ const ProductRelative: React.FC<{ currentProductId: string }> = ({ currentProduc
 
     const fetchProducts = async () => {
       try {
-        const response = await axios.post('http://localhost:8080/api/product/get', {});
+        const response = await axios.post(
+          'https://sneaker-production.up.railway.app/api/product/get',
+          {}
+        );
 
         if (!response) {
           throw new Error('Không thể tải danh sách sản phẩm');

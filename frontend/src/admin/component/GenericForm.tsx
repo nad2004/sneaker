@@ -21,7 +21,7 @@ import axios from 'axios';
 
 const fetchCategories = async () => {
   try {
-    const response = await axios.post('http://localhost:8080/api/category/get');
+    const response = await axios.post('https://sneaker-production.up.railway.app/api/category/get');
     return response.data?.data || [];
   } catch (error) {
     console.error('Failed to fetch categories:', error);
@@ -139,7 +139,11 @@ const ImageUploadField = () => {
     formData.append('image', file);
     formData.append('productId', record._id); // ✅ Thêm productId vào formData
     try {
-      const response = await axios.post('http://localhost:8080/api/file/upload', formData, { withCredentials: true });
+      const response = await axios.post(
+        'https://sneaker-production.up.railway.app/api/file/upload',
+        formData,
+        { withCredentials: true }
+      );
 
       console.log('Upload response:', response.data);
 

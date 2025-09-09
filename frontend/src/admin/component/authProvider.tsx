@@ -6,7 +6,7 @@ const authProvider: AuthProvider = {
   login: async ({ email, password }) => {
     try {
       const response = await axios.post(
-        'http://localhost:8080/api/user/login',
+        'https://sneaker-production.up.railway.app/api/user/login',
         { email, password },
         { withCredentials: true }
       );
@@ -23,7 +23,7 @@ const authProvider: AuthProvider = {
   },
 
   logout: () => {
-    axios.get('http://localhost:8080/api/user/logout', {
+    axios.get('https://sneaker-production.up.railway.app/api/user/logout', {
       data: { userid: parsedUser?._id },
       withCredentials: true,
     });

@@ -24,8 +24,12 @@ const Dashboard = () => {
 
   const fetchOrder = async () => {
     try {
-      const response = await axios.get('http://localhost:8080/api/order/get-order-list');
-      const Userresponse = await axios.post('http://localhost:8080/api/user/get');
+      const response = await axios.get(
+        'https://sneaker-production.up.railway.app/api/order/get-order-list'
+      );
+      const Userresponse = await axios.post(
+        'https://sneaker-production.up.railway.app/api/user/get'
+      );
 
       const orderData = response.data.data;
       setOrders(orderData);

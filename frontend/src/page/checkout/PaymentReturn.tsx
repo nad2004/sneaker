@@ -18,7 +18,7 @@ const VnpayReturn: React.FC = () => {
       setStatus('success'); // Thanh toán thành công
     } else {
       try {
-        axios.delete('http://localhost:8080/api/order/delete', {
+        axios.delete('https://sneaker-production.up.railway.app/api/order/delete', {
           data: { _id: orderId },
           withCredentials: true,
         });

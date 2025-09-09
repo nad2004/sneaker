@@ -53,7 +53,7 @@ const OrderPage = () => {
     };
     try {
       console.log(review);
-      await axios.post('http://localhost:8080/api/review/create', review);
+      await axios.post('https://sneaker-production.up.railway.app/api/review/create', review);
       alert('Đánh giá thành công!');
       window.location.reload();
     } catch (error) {
@@ -65,7 +65,7 @@ const OrderPage = () => {
     console.log(userId);
     try {
       const response = await axios.post(
-        'http://localhost:8080/api/order/order-list',
+        'https://sneaker-production.up.railway.app/api/order/order-list',
         { userId },
         { withCredentials: true }
       );
@@ -186,7 +186,7 @@ const OrderPage = () => {
                           ${(item.quantity * item.productId?.price).toLocaleString()}
                         </div>
                         {/* Nút đánh giá */}$
-                        {selectedOrder?.delivery_status === 'Complete' && (
+                        {selectedOrder?.delivery_status === 'Shipped' && (
                           <button
                             className="ml-4 px-4 py-2 bg-blue-500 text-white rounded"
                             onClick={() => setSelectedProduct(item)}

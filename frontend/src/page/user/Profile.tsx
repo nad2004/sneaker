@@ -57,7 +57,9 @@ const Profile = () => {
   const handleOpenVerifyOtp = async () => {
     setError(null);
     try {
-      await axios.put('http://localhost:8080/api/user/forgot-password', { email: user?.email });
+      await axios.put('https://sneaker-production.up.railway.app/api/user/forgot-password', {
+        email: user?.email,
+      });
       setOpenVerifyOtp(true);
     } catch (err: any) {
       alert(err.response.data.message);
@@ -68,10 +70,13 @@ const Profile = () => {
     event.preventDefault();
     setError(null);
     try {
-      await axios.put('http://localhost:8080/api/user/verify-forgot-password-otp', {
-        email: user?.email,
-        otp,
-      });
+      await axios.put(
+        'https://sneaker-production.up.railway.app/api/user/verify-forgot-password-otp',
+        {
+          email: user?.email,
+          otp,
+        }
+      );
       setOpenVerifyOtp(false);
       setOtp('');
       setOpenChangePassword(true);
@@ -84,10 +89,13 @@ const Profile = () => {
     event.preventDefault();
     setError(null);
     try {
-      const response = await axios.put('http://localhost:8080/api/user/reset-password', {
-        email: user?.email,
-        newPassword,
-      });
+      const response = await axios.put(
+        'https://sneaker-production.up.railway.app/api/user/reset-password',
+        {
+          email: user?.email,
+          newPassword,
+        }
+      );
       if (response.data.success) {
         alert('Đổi mật khẩu thành công!');
         setOpenChangePassword(false);
@@ -109,9 +117,13 @@ const Profile = () => {
       formData.append('image', file);
       formData.append('userId', user?._id || '');
 
-      const response = await axios.put('http://localhost:8080/api/user/upload-avatar', formData, {
-        withCredentials: true,
-      });
+      const response = await axios.put(
+        'https://sneaker-production.up.railway.app/api/user/upload-avatar',
+        formData,
+        {
+          withCredentials: true,
+        }
+      );
 
       if (response.data.success) {
         alert('Cập nhật ảnh đại diện thành công!');
@@ -137,13 +149,16 @@ const Profile = () => {
 
   const handleSaveChanges = async () => {
     try {
-      const response = await axios.put('http://localhost:8080/api/user/update-profile', {
-        id: user?._id,
-        phone: phoneNumber,
-        address: address,
-        name: userName,
-        email: userEmail,
-      });
+      const response = await axios.put(
+        'https://sneaker-production.up.railway.app/api/user/update-profile',
+        {
+          id: user?._id,
+          phone: phoneNumber,
+          address: address,
+          name: userName,
+          email: userEmail,
+        }
+      );
 
       if (response.data.success) {
         alert('Thay đổi thành công!');

@@ -14,7 +14,7 @@ const VerifyOtp: React.FC = () => {
 
     try {
       const response = await axios.put(
-        'http://localhost:8080/api/user/verify-forgot-password-otp',
+        'https://sneaker-production.up.railway.app/api/user/verify-forgot-password-otp',
         {
           email,
           otp,

@@ -25,7 +25,7 @@ const AdminChatPage = () => {
     if (!currentConvRef) return;
     try {
       const response = await axios.post(
-        'http://localhost:8080/api/conversation/getconversation',
+        'https://sneaker-production.up.railway.app/api/conversation/getconversation',
         { _id: currentConvRef.current._id },
         { withCredentials: true }
       );
@@ -42,7 +42,7 @@ const AdminChatPage = () => {
     try {
       const user = JSON.parse(localStorage.getItem('user') || '{}');
       const res = await axios.post(
-        'http://localhost:8080/api/conversation/getuserconversations',
+        'https://sneaker-production.up.railway.app/api/conversation/getuserconversations',
         { userId: user._id },
         { withCredentials: true }
       );
@@ -57,7 +57,7 @@ const AdminChatPage = () => {
   const updateMessages = async (conversationId: string, msg: any) => {
     try {
       const response = axios.post(
-        'http://localhost:8080/api/message/create',
+        'https://sneaker-production.up.railway.app/api/message/create',
         { conversation: conversationId, text: msg.text, sender: msg.sender },
         { withCredentials: true }
       );
@@ -146,7 +146,7 @@ const AdminChatPage = () => {
   }, [messages]);
   const recallMessage = async (messageId: string) => {
     try {
-      await axios.delete('http://localhost:8080/api/message/delete', {
+      await axios.delete('https://sneaker-production.up.railway.app/api/message/delete', {
         data: { messageId },
         withCredentials: true,
       });

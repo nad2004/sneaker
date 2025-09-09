@@ -29,9 +29,12 @@ interface GenericListProps {
 
 const handleExport = async () => {
   try {
-    const response = await axios.get('http://localhost:8080/api/order/export-excel', {
-      responseType: 'blob', // Quan trọng! Đảm bảo nhận dữ liệu dưới dạng file
-    });
+    const response = await axios.get(
+      'https://sneaker-production.up.railway.app/api/order/export-excel',
+      {
+        responseType: 'blob', // Quan trọng! Đảm bảo nhận dữ liệu dưới dạng file
+      }
+    );
 
     // Tạo URL từ dữ liệu Blob
     const url = window.URL.createObjectURL(new Blob([response.data]));

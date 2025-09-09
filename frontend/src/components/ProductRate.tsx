@@ -26,7 +26,7 @@ const ProductRate: React.FC<{ productId: string }> = ({ productId }) => {
     const fetchData = async () => {
       try {
         const reviewResponse = await axios.post(
-          'http://localhost:8080/api/review/get-review-product',
+          'https://sneaker-production.up.railway.app/api/review/get-review-product',
           { productId }
         );
         setProductReview(reviewResponse.data?.data || []);

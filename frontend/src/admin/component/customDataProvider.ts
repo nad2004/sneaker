@@ -2,7 +2,7 @@ import axios from 'axios';
 import { DataProvider } from 'react-admin';
 import simpleRestProvider from 'ra-data-simple-rest';
 
-const apiUrl = 'http://localhost:8080/api';
+const apiUrl = 'https://sneaker-production.up.railway.app/api';
 const fetchUserName = async (UserId: string) => {
   try {
     const response = await axios.post(`${apiUrl}/user/get-user-details`, { id: UserId });
