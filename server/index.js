@@ -24,12 +24,32 @@ import cancelExpiredOrders from "./utils/cronJob.js";
 const app = express()
 const wsServer = http.createServer();
 
-app.use(cors({
-    credentials: true,
-    origin: ['http://localhost:5173', 'http://localhost:5174, sneaker-omega.vercel.app'], 
-    methods: ['GET', 'POST', 'PUT', 'DELETE'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
-}));
+const allowedOrigins = [
+  "http://localhost:5173",       // local dev
+  "http://localhost:5174",       // local dev khác
+  "https://sneaker-omega.vercel.app" // frontend deploy
+];
+
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      // Cho phép request không có origin (Postman, server-to-server)
+      if (!origin) return callback(null, true);
+
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      } else {
+        return callback(new Error("Not allowed by CORS"));
+      }
+    },
+    credentials: true, // cho phép cookie, Authorization header
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
+
+// Cho phép preflight request (OPTIONS)
+app.options("*", cors());
 
 app.use(express.json())
 app.use(cookieParser())
