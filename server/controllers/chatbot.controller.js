@@ -3,7 +3,7 @@ const { GoogleGenAI } = pkg;
 import ProductModel from "../models/product.model.js";
 
 // Nhập API key từ Google AI Studio
-const ai = new GoogleGenAI({ apiKey: "AIzaSyBnu-3JGy8VUuXuSXRZXe_rmwEczC8NJKM" });
+const ai = new GoogleGenAI({ apiKey: "12345" });
 
 export async function generateText(req, res) {
     try {
